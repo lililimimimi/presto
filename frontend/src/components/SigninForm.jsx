@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, useNavigate} from "react-router-dom";
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -6,16 +6,33 @@ import { login } from "../api/user";
 
 const SignInForm = () => {
     const [email,setEmail] = useState('');
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    const [error, setError] = useState(""); 
 
   const handleLogin = async () => {
     try {
+      if (!email || !password) {
+        setError("Please enter both email and password");
+        return;
+      }  
       const data = await login(email, password); 
       console.log("Login successful:", data);
       localStorage.setItem ('token',data.token);
+      navigate('/');
     } catch (error) {
      window.alert(`Login failed: ${error.message}`);
       console.error("Login failed:", error);
+    }
+  };
+
+  const handleToRegister =()=>{
+     navigate("/SignUpForm");
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleLogin();
     }
   };
 
@@ -30,6 +47,7 @@ const SignInForm = () => {
             fullWidth
             style={styles.textField}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div style={styles.inputContainer}>
@@ -37,11 +55,20 @@ const SignInForm = () => {
             id="outlined-basic"
             label="Password"
             variant="outlined"
+            type="password"
             fullWidth
             style={styles.textField}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
+        <Button
+          variant="text"
+          style={{ fontStyle: "italic" }}
+          onClick={handleToRegister}
+        >
+          Already have an account?
+        </Button>
         <div style={styles.buttonContainer}>
           <Button
             variant="contained"

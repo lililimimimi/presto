@@ -1,24 +1,30 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { register } from "../api/user";
 
 const SignUpForm = () => {
- const [email, setEmail] = useState("");
- const [password, setPassword] = useState("");
- const [name,setName] = useState("");
+ const [email, setEmail] = useState('');
+ const [password, setPassword] = useState('');
+ const [name,setName] = useState('');
+ const navigate = useNavigate();
 
   const handleRegister = async () => {
     try {
       const data = await register(email, password, name); 
       localStorage.setItem("token", data.token);
       console.log("Registration successful:", data);
+      navigate("/");
     } catch (error) {
       window.alert(`Registration failed:: ${error.message}`);
       console.error("Registration failed:", error);
     }
   };
+
+  const handleToLogin =()=>{
+    navigate("/SignInForm");
+  }
 
   return (
     <div style={styles.container}>
@@ -53,6 +59,13 @@ const SignUpForm = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        <Button
+          variant="text"
+          style={{ fontStyle: "italic" }}
+          onClick={handleToLogin}
+        >
+          Want to log in?
+        </Button>
         <div style={styles.buttonContainer}>
           <Button
             variant="contained"

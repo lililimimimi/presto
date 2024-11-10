@@ -1,3 +1,5 @@
+import { handleApiError } from "./errorHandler";
+
 export const login = async (email, password) => {
   const url = "http://localhost:5005/admin/auth/login";
 
@@ -13,19 +15,21 @@ export const login = async (email, password) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Login failed with status: ${response.status}`);
+     const error = new Error("Login failed");
+     error.response = response;
+     throw error;
     }
     const data = await response.json();
     return data;
   } catch (error) {
     console.error("Error during login:", error);
-    throw error;
+    const errorMessage = handleApiError(error, "login");
+    throw new Error(errorMessage);
   }
 };
 
-
 export const register = async (email, password, name) => {
-  const url = "http://localhost:5005/admin/auth/register";  
+  const url = "http://localhost:5005/admin/auth/register";
 
   const userData = { email, password, name };
 
@@ -33,20 +37,22 @@ export const register = async (email, password, name) => {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",  
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(userData),  
+      body: JSON.stringify(userData),
     });
 
     if (!response.ok) {
-      throw new Error(`Registration failed with status: ${response.status}`);
+      const error = new Error("Registration failed");
+      error.response = response;
+      throw error;
     }
 
-    const data = await response.json();  
-    return data;  
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error during registration:", error);
-    throw error;  
+    const errorMessage = handleApiError(error, "register");
+    throw new Error(errorMessage);
   }
 };
-
