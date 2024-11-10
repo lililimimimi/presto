@@ -1,34 +1,51 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { login } from "../api/user";
 
 const SignInForm = () => {
+    const [email,setEmail] = useState('');
+    const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const data = await login(email, password); 
+      console.log("Login successful:", data);
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.formContainer}>
         <div style={styles.inputContainer}>
-          <div>Email:</div>
           <TextField
             id="outlined-basic"
-            label="email"
+            label="Email"
             variant="outlined"
             fullWidth
             style={styles.textField}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div style={styles.inputContainer}>
-          <div>Password:</div>
           <TextField
             id="outlined-basic"
-            label="password"
+            label="Password"
             variant="outlined"
             fullWidth
             style={styles.textField}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <div style={styles.buttonContainer}>
-          <Button variant="contained" style={styles.button}>
+          <Button
+            variant="contained"
+            style={styles.button}
+            onClick={handleLogin}
+          >
             Login
           </Button>
           <Button variant="contained" style={styles.button}>
