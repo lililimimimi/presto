@@ -8,12 +8,12 @@ const SignInForm = () => {
     const [email,setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const [error, setError] = useState(""); 
 
   const handleLogin = async () => {
     try {
       if (!email || !password) {
-        setError("Please enter both email and password");
+        window.alert("Please enter email or password");
+        
         return;
       }  
       const data = await login(email, password); 
@@ -27,7 +27,7 @@ const SignInForm = () => {
   };
 
   const handleToRegister =()=>{
-     navigate("/SignUpForm");
+     navigate("/register");
   }
 
   const handleKeyDown = (event) => {
@@ -41,7 +41,7 @@ const SignInForm = () => {
       <div style={styles.formContainer}>
         <div style={styles.inputContainer}>
           <TextField
-            id="outlined-basic"
+            id="loginEmail"
             label="Email"
             variant="outlined"
             fullWidth
@@ -52,7 +52,7 @@ const SignInForm = () => {
         </div>
         <div style={styles.inputContainer}>
           <TextField
-            id="outlined-basic"
+            id="loginPass"
             label="Password"
             variant="outlined"
             type="password"
@@ -92,13 +92,11 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh", 
-    backgroundColor: "#f5f5f5", 
   },
   formContainer: {
     width: "100%",
     maxWidth: "400px", 
     padding: "20px",
-    backgroundColor: "#fff", 
     borderRadius: "8px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
   },

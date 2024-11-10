@@ -9,9 +9,28 @@ const SignUpForm = () => {
  const [password, setPassword] = useState('');
  const [name,setName] = useState('');
  const navigate = useNavigate();
+ const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async () => {
     try {
+            if (!email) {
+              window.alert("Please enter your email");
+              return;
+            }
+            if (!password) {
+              window.alert("Please enter your password");
+              return;
+            }
+            if (!confirmPassword) {
+              window.alert("Please confirm your password");
+              return;
+            }
+       if (password !== confirmPassword) {
+         window.alert(
+           "The passwords does not match. Please try again."
+         );
+         return;
+       }   
       const data = await register(email, password, name); 
       localStorage.setItem("token", data.token);
       console.log("Registration successful:", data);
@@ -23,8 +42,14 @@ const SignUpForm = () => {
   };
 
   const handleToLogin =()=>{
-    navigate("/SignInForm");
+    navigate("/login");
   }
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleRegister();
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -32,31 +57,47 @@ const SignUpForm = () => {
         <div style={styles.inputContainer}>
           <div style={styles.inputContainer}>
             <TextField
-              id="outlined-basic"
+              id="signUpName"
               label="Name"
               variant="outlined"
               fullWidth
               style={styles.textField}
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
           </div>
           <TextField
-            id="outlined-basic"
+            id="signUpEmail"
             label="Email"
             variant="outlined"
             fullWidth
             style={styles.textField}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div style={styles.inputContainer}>
           <TextField
-            id="outlined-basic"
+            id="signUpPass"
             label="Password"
             variant="outlined"
+            type="password"
             fullWidth
             style={styles.textField}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
+        <div style={styles.inputContainer}>
+          <TextField
+            id="signUpCompass"
+            label="ConfirmPassword"
+            variant="outlined"
+            type="password"
+            fullWidth
+            style={styles.textField}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <Button
@@ -89,13 +130,11 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    backgroundColor: "#f5f5f5",
   },
   formContainer: {
     width: "100%",
     maxWidth: "400px",
     padding: "20px",
-    backgroundColor: "#fff",
     borderRadius: "8px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
