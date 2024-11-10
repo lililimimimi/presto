@@ -12,7 +12,9 @@ const SignInForm = () => {
     try {
       const data = await login(email, password); 
       console.log("Login successful:", data);
+      localStorage.setItem ('token',data.token);
     } catch (error) {
+     window.alert(`Login failed: ${error.message}`);
       console.error("Login failed:", error);
     }
   };
