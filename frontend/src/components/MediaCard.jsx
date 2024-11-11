@@ -1,14 +1,18 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 const MediaCard = ({ id, title, description }) => {
-  console.log("Card props:", { id, title, description }); 
+  const navigate = useNavigate();
+
+  const goToSinglePresentation = (id) => {
+    navigate(`/presentation/${id}`);
+  };
   return (
     <Box
       sx={{
@@ -46,7 +50,9 @@ const MediaCard = ({ id, title, description }) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small">Edit</Button>
+          <Button size="small" onClick={() => goToSinglePresentation(id)}>
+            Edit
+          </Button>
           <Button size="small">Learn More</Button>
         </CardActions>
       </Card>

@@ -6,6 +6,7 @@ import { getStore } from "../api/data";
 
 const Dashboard =()=>{
     const [presentation, setPresentation] = useState([]);
+
   const getPresentations = async () => {
     try {
       const data = await getStore();
@@ -16,7 +17,6 @@ const Dashboard =()=>{
             ...details,
           })
         );
-        console.log("Processed data:", presentationArray); 
         setPresentation(presentationArray);
       }
     } catch (error) {
@@ -39,7 +39,7 @@ const Dashboard =()=>{
           <MediaCard
             key={item.id}
             id={item.id}
-            title={item.Title}
+            title={item.title}
             description={item.description}
           />
         ))}
