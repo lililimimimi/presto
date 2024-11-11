@@ -20,7 +20,7 @@ const SignInForm = (props) => {
       console.log("Login successful:", data);
       props.setToken(data.token);
       localStorage.setItem ('token',data.token);
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
      window.alert(`Login failed: ${error.message}`);
       console.error("Login failed:", error);

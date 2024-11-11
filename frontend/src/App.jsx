@@ -3,6 +3,7 @@ import { Routes, Route, BrowserRouter, Navigate} from "react-router-dom";
 import SignInForm from './components/SigninForm';
 import SignUpForm from './components/SignUpForm';
 import Logout from './components/Logout';
+import Dashboard from './components/Dashboard';
 
 
 function App() {
@@ -20,6 +21,10 @@ function App() {
           <Route
             path="/register"
             element={<SignUpForm setToken={setToken} />}
+          ></Route>
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
           ></Route>
         </Routes>
       </BrowserRouter>

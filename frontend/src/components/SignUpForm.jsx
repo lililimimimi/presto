@@ -35,7 +35,7 @@ const SignUpForm = (props) => {
       props.setToken(data.token);
       localStorage.setItem("token", data.token);
       console.log("Registration successful:", data);
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       window.alert(`Registration failed:: ${error.message}`);
       console.error("Registration failed:", error);
