@@ -18,45 +18,49 @@ const style = {
   p: 4,
 };
 
-export default function BasicModal() {
+export default function BasicModal({onCreateSuccess}) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [title,setTitle] = useState('');
+  const [title, setTitle] = useState('');
+  const [description,setDescription] = useState('');
 
-const handleCreatePresentation = async (title) => {
-  try {
+  const handleCreatePresentation = async (title, description) => {
+    try {
+      const data = await getStore();
+      const { store } = data;
 
-    const data = await getStore();
-    const { store } = data;
+      const newId = `${Object.keys(store).length + 1}`;
 
-    const newId = `${Object.keys(store).length + 1}`;
-
-    const updatedStore = {
-      store: {
-        ...store, 
-        [newId]: {
-          1: {}, 
-          Title: title, 
+      const updatedStore = {
+        store: {
+          ...store,
+          [newId]: {
+            1: {},
+            Title: title,
+            description: description || "",
+          },
         },
-      },
-    };
-    const updatedData = await updateStore(updatedStore);
-    console.log("Presentation created successfully:", updatedData);
-    return updatedData;
-  } catch (error) {
-    console.error("Failed to create presentation:", error);
-    throw error;
-  }
-};
+      };
+      const updatedData = await updateStore(updatedStore);
+      console.log("Presentation created successfully:", updatedData);
+      return updatedData;
+    } catch (error) {
+      console.error("Failed to create presentation:", error);
+      throw error;
+    }
+  };
   const handleSubmit = async () => {
     if (!title.trim()) {
       alert("Please enter a title");
       return;
     }
     try {
-      await handleCreatePresentation(title);
-      setTitle(""); 
+      await handleCreatePresentation(title,description);
+      setTitle("");
+      setDescription(""); 
+      handleClose();
+      onCreateSuccess?.(); 
     } catch (error) {
       alert(error.message);
     }
@@ -78,17 +82,21 @@ const handleCreatePresentation = async (title) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Presentation Title:
-          </Typography>
           <TextField
-            placeholder="Presentation Title"
+            label="Presentation Title"
             variant="outlined"
-            multiline
-            rows={4}
             fullWidth
             onChange={(e) => setTitle(e.target.value)}
             value={title}
+          />
+          <TextField
+            label="Description (Optional)"
+            fullWidth
+            multiline
+            rows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            sx={{ mt: 2 }}
           />
           <Box
             sx={{

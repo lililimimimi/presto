@@ -97,7 +97,6 @@ export const updateStore = async (storeData) => {
         store: storeData.store,
       }),
     });
-console.log(storeData);
     if (!response.ok) {
       throw new Error(`Store update failed with status: ${response.status}`);
     }

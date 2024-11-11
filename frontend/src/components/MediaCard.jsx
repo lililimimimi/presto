@@ -7,40 +7,51 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
-export default function MediaCard() {
+const MediaCard = ({ id, title, description }) => {
+  console.log("Card props:", { id, title, description }); 
   return (
-
     <Box
       sx={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: 2, 
+        padding: 2,
       }}
     >
       <Card
         sx={{
-          width: "600px", 
-          height: "300px", 
+          width: "600px",
+          height: "300px",
           display: "flex",
           flexDirection: "column",
         }}
       >
-        <CardMedia
-          sx={{ height: "150px" }} 
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="green iguana"
+        <Box
+          sx={{
+            height: "150px",
+            backgroundColor: "#f5f5f5",
+          }}
         />
-        <CardContent sx={{ flexGrow: 1 }}>
+        <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            Lizard
+            {title}
+          </Typography>
+          {description && (
+            <Typography variant="body2" color="text.secondary">
+              {description}
+            </Typography>
+          )}
+          <Typography variant="body2" color="text.secondary">
+            Slides: 1
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small">Share</Button>
+          <Button size="small">Edit</Button>
           <Button size="small">Learn More</Button>
         </CardActions>
       </Card>
     </Box>
   );
-}
+};
+
+export default MediaCard;
