@@ -56,3 +56,59 @@ export const register = async (email, password, name) => {
     throw new Error(errorMessage);
   }
 };
+
+export const getStore = async () => {
+  const userToken = localStorage.getItem("token");
+  const url = "http://localhost:5005/store";
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`, 
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Store fetch failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching store:", error);
+    throw error;
+  }
+};
+
+export const updateStore = async (storeData) => {
+  const userToken = localStorage.getItem("token");
+  const url = "http://localhost:5005/store";
+
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify({
+        store: storeData.store,
+      }),
+    });
+console.log(storeData);
+    if (!response.ok) {
+      throw new Error(`Store update failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating store:", error);
+    throw error;
+  }
+};
+
+
+    

@@ -2,36 +2,34 @@ import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { register } from "../api/user";
+import { register } from "../api/data";
 
 const SignUpForm = (props) => {
- const [email, setEmail] = useState('');
- const [password, setPassword] = useState('');
- const [name,setName] = useState('');
- const navigate = useNavigate();
- const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const navigate = useNavigate();
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async () => {
     try {
-            if (!email) {
-              window.alert("Please enter your email");
-              return;
-            }
-            if (!password) {
-              window.alert("Please enter your password");
-              return;
-            }
-            if (!confirmPassword) {
-              window.alert("Please confirm your password");
-              return;
-            }
-       if (password !== confirmPassword) {
-         window.alert(
-           "The passwords does not match. Please try again."
-         );
-         return;
-       }   
-      const data = await register(email, password, name); 
+      if (!email) {
+        window.alert("Please enter your email");
+        return;
+      }
+      if (!password) {
+        window.alert("Please enter your password");
+        return;
+      }
+      if (!confirmPassword) {
+        window.alert("Please confirm your password");
+        return;
+      }
+      if (password !== confirmPassword) {
+        window.alert("The passwords does not match. Please try again.");
+        return;
+      }
+      const data = await register(email, password, name);
       props.setToken(data.token);
       localStorage.setItem("token", data.token);
       console.log("Registration successful:", data);
@@ -42,9 +40,9 @@ const SignUpForm = (props) => {
     }
   };
 
-  const handleToLogin =()=>{
+  const handleToLogin = () => {
     navigate("/login");
-  }
+  };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -123,7 +121,6 @@ const SignUpForm = (props) => {
       </div>
     </div>
   );
-  
 };
 const styles = {
   container: {

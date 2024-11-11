@@ -1,35 +1,35 @@
-import { Routes, Route, BrowserRouter, useNavigate} from "react-router-dom";
+import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { login } from "../api/user";
+import { login } from "../api/data";
 
 const SignInForm = (props) => {
-    const [email,setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       if (!email || !password) {
         window.alert("Please enter email or password");
-        
+
         return;
-      }  
-      const data = await login(email, password); 
+      }
+      const data = await login(email, password);
       console.log("Login successful:", data);
       props.setToken(data.token);
-      localStorage.setItem ('token',data.token);
-      navigate('/dashboard');
+      localStorage.setItem("token", data.token);
+      navigate("/dashboard");
     } catch (error) {
-     window.alert(`Login failed: ${error.message}`);
+      window.alert(`Login failed: ${error.message}`);
       console.error("Login failed:", error);
     }
   };
 
-  const handleToRegister =()=>{
-     navigate("/register");
-  }
+  const handleToRegister = () => {
+    navigate("/register");
+  };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -92,28 +92,28 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: "100vh", 
+    minHeight: "100vh",
   },
   formContainer: {
     width: "100%",
-    maxWidth: "400px", 
+    maxWidth: "400px",
     padding: "20px",
     borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
   inputContainer: {
-    marginBottom: "20px", 
+    marginBottom: "20px",
   },
   textField: {
-    width: "100%", 
+    width: "100%",
   },
   buttonContainer: {
     display: "flex",
-    justifyContent: "space-between", 
-    gap: "10px", 
+    justifyContent: "space-between",
+    gap: "10px",
   },
   button: {
-    flexGrow: 1, 
+    flexGrow: 1,
   },
 };
 
