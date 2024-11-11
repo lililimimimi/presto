@@ -13,8 +13,14 @@ function App() {
         <Logout token={token} setToken={setToken} />
         <Routes>
           <Route path="/" element={token ? null : <Navigate to="/login" />} />
-          <Route path="/login" element={<SignInForm />}></Route>
-          <Route path="/register" element={<SignUpForm />}></Route>
+          <Route
+            path="/login"
+            element={<SignInForm setToken={setToken} />}
+          ></Route>
+          <Route
+            path="/register"
+            element={<SignUpForm setToken={setToken} />}
+          ></Route>
         </Routes>
       </BrowserRouter>
     </>

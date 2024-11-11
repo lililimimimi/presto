@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { login } from "../api/user";
 
-const SignInForm = () => {
+const SignInForm = (props) => {
     const [email,setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -18,6 +18,7 @@ const SignInForm = () => {
       }  
       const data = await login(email, password); 
       console.log("Login successful:", data);
+      props.setToken(data.token);
       localStorage.setItem ('token',data.token);
       navigate('/');
     } catch (error) {

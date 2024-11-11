@@ -11,14 +11,20 @@ const Logout =(props)=>{
     navigate("/login"); 
   };
     return (
-      <div>
+      <div
+        style={{
+          padding: "10px",
+          display: "flex",
+          justifyContent: "flex-end", 
+        }}
+      >
         {props.token === null ? (
           <>
             <Button
               component={Link}
               to="/login"
               variant="contained"
-              sx={{ mr: 2 }} 
+              sx={{ mr: 2 }}
             >
               Login
             </Button>

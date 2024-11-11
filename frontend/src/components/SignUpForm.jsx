@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { register } from "../api/user";
 
-const SignUpForm = () => {
+const SignUpForm = (props) => {
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
  const [name,setName] = useState('');
@@ -32,6 +32,7 @@ const SignUpForm = () => {
          return;
        }   
       const data = await register(email, password, name); 
+      props.setToken(data.token);
       localStorage.setItem("token", data.token);
       console.log("Registration successful:", data);
       navigate("/");
