@@ -39,7 +39,7 @@ const Dashboard =()=>{
           <MediaCard
             key={item.id}
             id={item.id}
-            title={item.title}
+            title={item.Title}
             description={item.description}
           />
         ))}
