@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { TextField } from "@mui/material";
-import { getStore,updateStore } from "../api/data";
-
+import { getStore, updateStore } from "../api/data";
+import Typography from "@mui/material/Typography";
 
 const style = {
   position: "absolute",
@@ -18,38 +17,63 @@ const style = {
   p: 4,
 };
 
-export default function BasicModal({onCreateSuccess}) {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [title, setTitle] = useState('');
-  const [description,setDescription] = useState('');
+const PresentationModal = ({
+  open,
+  onClose,
+  onSuccess,
+  initialData = null, 
+  mode = "create",
+}) => {
+
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+    useEffect(() => {
+      if (initialData && mode === "edit") {
+        setTitle(initialData.Title || "");
+        setDescription(initialData.description || "");
+      }
+    }, [initialData, mode]);
 
   const handleCreatePresentation = async (title, description) => {
     try {
       const data = await getStore();
       const { store } = data;
 
-      const timestamp = Date.now();
-      const newId = `${timestamp}`;
+      if(mode === 'create'){
+        const timestamp = Date.now();
+        const newId = `${timestamp}`;
 
-      const updatedStore = {
-        store: {
-          ...store,
-          [newId]: {
-            1: {},
-            Title: title,
-            description: description || "",
+        const updatedStore = {
+          store: {
+            ...store,
+            [newId]: {
+              1: {},
+              Title: title,
+              description: description || "",
+            },
           },
-        },
-      };
-      const updatedData = await updateStore(updatedStore);
-      console.log("Presentation created successfully:", updatedData);
-      return updatedData;
+        };
+         return await updateStore(updatedStore);
+      }else{
+         const updatedStore = {
+          store: {
+            ...store,
+            [initialData.id]: {
+              ...store[initialData.id],
+              Title: title,
+              description: description || "",
+            },
+          },
+        };
+        return await updateStore(updatedStore);
+      }
     } catch (error) {
       console.error("Failed to create presentation:", error);
       throw error;
     }
+    
   };
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -57,28 +81,21 @@ export default function BasicModal({onCreateSuccess}) {
       return;
     }
     try {
-      await handleCreatePresentation(title,description);
+      await handleCreatePresentation(title, description);
       setTitle("");
-      setDescription(""); 
-      handleClose();
-      onCreateSuccess?.(); 
+      setDescription("");
+      onClose();
+      onSuccess?.();
     } catch (error) {
       alert(error.message);
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Button onClick={handleOpen}>Create new presentation</Button>
+    <Box>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -108,9 +125,9 @@ export default function BasicModal({onCreateSuccess}) {
             }}
           >
             <Button variant="contained" onClick={handleSubmit}>
-              Submit
+              {mode === "create" ? "Create" : "Save"}
             </Button>
-            <Button variant="contained" onClick={handleClose}>
+            <Button variant="contained" onClick={onClose}>
               Cancel
             </Button>
           </Box>
@@ -118,4 +135,5 @@ export default function BasicModal({onCreateSuccess}) {
       </Modal>
     </Box>
   );
-}
+};
+export default PresentationModal;

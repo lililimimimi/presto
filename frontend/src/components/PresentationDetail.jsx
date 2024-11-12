@@ -4,17 +4,19 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
 import ErrorModal from "./ErrorModal";
+import PresentationModal from "./PresentationModal";
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
   const [presentation, setPresentation] = useState({});
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false); 
+  const [showDeleteModal, setShowDeleteModal] = useState(false); 
+  const [showEditModal, setShowEditModal] = useState(false); 
   const { id } = useParams();
 
 
   const handleDeleteClick = () => {
-    setShowModal(true); 
+    setShowDeleteModal(true); 
   };
 
   const getPresentationDetail = async () => {
@@ -47,7 +49,7 @@ const PresentationDetail = () => {
         delete updatedStore.store[id];
 
         await updateStore(updatedStore);
-        setShowModal(false); 
+        setShowDeleteModal(false); 
          navigate("/dashboard");
 
       } catch (error) {
@@ -64,6 +66,9 @@ const PresentationDetail = () => {
       <Button variant="contained" onClick={handleDeleteClick}>
         Delete
       </Button>
+      <Button variant="contained" onClick={() => setShowEditModal(true)}>
+        Edit
+      </Button>
       <Typography gutterBottom variant="h5" component="div">
         {presentation?.Title || "Loading..."}
       </Typography>
@@ -71,11 +76,21 @@ const PresentationDetail = () => {
         {presentation?.description || "No description available"}
       </Typography>
       <ErrorModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeletePresentation}
         title="Delete Presentation"
         content="This presentation will be permanently deleted. Continue?"
+      />
+      <PresentationModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSuccess={() => {
+          getPresentationDetail();
+          setShowEditModal(false);
+        }}
+        mode="edit"
+        initialData={presentation}
       />
     </>
   );
