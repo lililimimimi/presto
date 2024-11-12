@@ -19,7 +19,7 @@ const PresentationDetail = () => {
   const { id } = useParams();
 
 
-  const handleDeleteClick = () => {
+  const handleDeleteClickModal = () => {
     setShowDeleteModal(true); 
   };
 
@@ -85,20 +85,74 @@ const PresentationDetail = () => {
    return () => [window.removeEventListener("keydown", keydown)];
   },[currentIndex,sliedeCount])
 
+const createNewSlide = async () => {
+  try {
+
+    const data = await getStore();
+
+    const presentation = data.store[id];
+    const newSlideNumber =
+      Object.keys(presentation).filter((key) => !isNaN(key)).length + 1; 
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: {
+          ...presentation,
+          [newSlideNumber]: {}, 
+        },
+      },
+    };
+    await updateStore(updatedStore);
+    getPresentationDetail();
+    setCurrentIndex(newSlideNumber);
+  } catch (error) {
+    console.error("Failed to create new slide:", error);
+
+  }
+};
+
+const handleDeleteSlide = async()=>{
+ try {
+        const data = await getStore();
+        const presentation = data.store[id];
+
+           const slides = Object.keys(presentation).filter(
+             (key) => !isNaN(key)
+           );
+           if (slides.length <= 1) {
+             alert("Cannot delete the last slide");
+             return;
+           }
+
+        const updatedStore = {
+          store: {
+        ...data.store,
+        [id]: {
+          ...presentation,
+        }
+      }
+    };
+        delete updatedStore.store[id][currentIndex];
+        await updateStore(updatedStore);
+        getPresentationDetail();
+      } catch (error) {
+      }
+    
+}
+
   return (
     <>
       <Button variant="contained" onClick={() => navigate("/dashboard")}>
         Back
       </Button>
-      <Button variant="contained" onClick={handleDeleteClick}>
-        Delete
+      <Button variant="contained" onClick={handleDeleteClickModal}>
+        Delete Pre
       </Button>
       <Button variant="contained" onClick={() => setShowEditModal(true)}>
         Edit
       </Button>
-      <Button variant="contained" >
-        Create
-      </Button>
+
       <Typography gutterBottom variant="h5" component="div">
         Title: {presentation?.Title || "Loading..."}
       </Typography>
@@ -107,7 +161,18 @@ const PresentationDetail = () => {
       </Typography>
       <Box
         style={{ width: "100%", height: "500px", border: "1px solid black" }}
-      ></Box>
+      >
+        <Button variant="contained" onClick={createNewSlide}>
+          Create
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleDeleteSlide}
+          disabled={sliedeCount <= 1}
+        >
+          Delete Slide
+        </Button>
+      </Box>
       <Typography gutterBottom variant="h5" component="div">
         {currentIndex}
       </Typography>

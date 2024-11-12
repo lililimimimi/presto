@@ -7,12 +7,13 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
-const MediaCard = ({ id, title, description }) => {
+const MediaCard = ({ id, title, description}) => {
   const navigate = useNavigate();
 
   const goToSinglePresentation = (id) => {
     navigate(`/presentation/${id}`);
   };
+
   return (
     <Box
       sx={{
