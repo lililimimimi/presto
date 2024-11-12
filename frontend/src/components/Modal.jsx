@@ -30,7 +30,8 @@ export default function BasicModal({onCreateSuccess}) {
       const data = await getStore();
       const { store } = data;
 
-      const newId = `${Object.keys(store).length + 1}`;
+      const timestamp = Date.now();
+      const newId = `${timestamp}`;
 
       const updatedStore = {
         store: {
