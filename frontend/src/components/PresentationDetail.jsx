@@ -5,6 +5,8 @@ import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
 import ErrorModal from "./ErrorModal";
 import PresentationModal from "./PresentationModal";
+import { Box, keyframes } from "@mui/material";
+
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
@@ -12,6 +14,8 @@ const PresentationDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false); 
   const [showEditModal, setShowEditModal] = useState(false); 
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const[sliedeCount, setSlideCount] = useState(1);
   const { id } = useParams();
 
 
@@ -27,6 +31,10 @@ const PresentationDetail = () => {
         const presentationDetail = data.store[id]; 
         if (presentationDetail) {
           setPresentation({ id, ...presentationDetail });
+        const slides = Object.keys(presentationDetail).filter(
+          (key) => !isNaN(key)
+        );
+        setSlideCount(slides.length);
         } else {
           console.error("Presentation not found");
         }
@@ -57,6 +65,25 @@ const PresentationDetail = () => {
       }
     
   };
+  const handleToPre=()=>{
+    setCurrentIndex(pre=>(pre > 1 ? pre -1 : pre));
+  }
+
+  const handleToNext =()=> {
+    setCurrentIndex(pre => (pre < sliedeCount ? pre +1 : pre));
+  }
+
+  useEffect(()=>{
+    const keydown =(e) =>{
+        if(e.key === 'ArrayLeft'){
+            handleToPre();
+        }else if (e.key === "ArrayRight") {
+          handleToNext();
+        }
+    }
+    window.addEventListener('keydown',keydown)
+   return () => [window.removeEventListener("keydown", keydown)];
+  },[currentIndex,sliedeCount])
 
   return (
     <>
@@ -69,12 +96,53 @@ const PresentationDetail = () => {
       <Button variant="contained" onClick={() => setShowEditModal(true)}>
         Edit
       </Button>
+      <Button variant="contained" >
+        Create
+      </Button>
       <Typography gutterBottom variant="h5" component="div">
-        {presentation?.Title || "Loading..."}
+        Title: {presentation?.Title || "Loading..."}
       </Typography>
       <Typography variant="body1" component="div">
-        {presentation?.description || "No description available"}
+        {presentation.description}
       </Typography>
+      <Box
+        style={{ width: "100%", height: "500px", border: "1px solid black" }}
+      ></Box>
+      <Typography gutterBottom variant="h5" component="div">
+        {currentIndex}
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 2,
+          mt: 2,
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={handleToPre}
+          disabled={currentIndex === 1}
+          sx={{
+            minWidth: "120px",
+            height: "40px",
+          }}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleToNext}
+          disabled={currentIndex === sliedeCount}
+          sx={{
+            minWidth: "120px",
+            height: "40px",
+          }}
+        >
+          Next
+        </Button>
+      </Box>
+
       <ErrorModal
         open={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
