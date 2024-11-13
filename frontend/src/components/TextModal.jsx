@@ -44,6 +44,7 @@ const TextModal = ({
 
   const handleSubmit = () => {
     const textBox = {
+      type: "text",
       size,
       text,
       fontSize,

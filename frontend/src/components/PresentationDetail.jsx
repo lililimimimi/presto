@@ -172,7 +172,7 @@ const PresentationDetail = () => {
 
       setEditingElement({ ...element, index });
       setShowEditModal(true); 
-    } else if (element.type === "text") {
+    } else{
       setEditingElement({ ...element, index });
     }
   };
@@ -221,13 +221,20 @@ const PresentationDetail = () => {
       console.error("Failed to delete element:", error);
     }
   };
-  const handleContextMenu = (e, index) => {
-    console.log("Right click triggered", index);
-    e.preventDefault();
-    e.stopPropagation();
-    setDeleteIndex(index);
-    setShowDeleteModal(true);
-  };
+const handleContextMenu = (e, index, element) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (element.type === "text") {
+    setDeleteIndex(index); 
+    setShowDeleteModal(true); 
+  } else if (element.type === "image") {
+
+    setDeleteIndex(index); 
+    setShowDeleteModal(true); 
+  }
+};
+
   const handleToAddImage = async (imageData) => {
     try {
       const data = await getStore();
@@ -260,6 +267,58 @@ const PresentationDetail = () => {
       console.error("Failed to add image:", error);
     }
   };
+
+const handleEditImage = async (updatedData) => {
+  try {
+    const data = await getStore(); 
+    const presentation = data.store[id]; 
+
+    presentation[currentIndex].elements[editingElement.index] = {
+      ...presentation[currentIndex].elements[editingElement.index], 
+      ...updatedData, 
+    };
+
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: presentation,
+      },
+    };
+
+    await updateStore(updatedStore); 
+    setPresentation(presentation); 
+    setEditingElement(null); 
+  } catch (error) {
+    console.error("Failed to update image element:", error); 
+  }
+};
+const handleDeleteImage = async (index) => {
+  try {
+    const data = await getStore(); 
+    const presentation = data.store[id]; 
+
+    presentation[currentIndex].elements = presentation[
+      currentIndex
+    ].elements.filter((_, i) => i !== index);
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: presentation,
+      },
+    };
+
+    await updateStore(updatedStore); 
+    setPresentation(presentation); 
+    setShowDeleteModal(false); 
+    setDeleteIndex(null); 
+  } catch (error) {
+    console.error("Failed to delete image element:", error); 
+  }
+};
+
+
 
   return (
     <>
@@ -301,7 +360,7 @@ const PresentationDetail = () => {
           <Box
             key={index}
             onClick={() => handleTextElementClick(element, index)}
-            onContextMenu={(e) => handleContextMenu(e, index)} 
+            onContextMenu={(e) => handleContextMenu(e, index)}
             style={{
               position: "absolute",
               top: `${element.position?.y || 0}%`,
@@ -310,7 +369,7 @@ const PresentationDetail = () => {
               height: `${element.size || 10}%`,
               overflow: "hidden",
               border: "1px solid grey",
-              cursor: "pointer", 
+              cursor: "pointer",
             }}
           >
             {element.type === "text" && <Box>{element.text}</Box>}
@@ -371,18 +430,26 @@ const PresentationDetail = () => {
           setShowDeleteModal(false);
           setDeleteIndex(null);
         }}
-        onConfirm={
-          deleteIndex !== null
-            ? handleDeleteTextElement
-            : handleDeletePresentation
-        }
+        onConfirm={() => {
+          if (deleteIndex !== null) {
+            const element = currentElements[deleteIndex]; 
+            if (element?.type === "text") {
+              handleDeleteTextElement(deleteIndex); 
+            } else if (element?.type === "image") {
+              handleDeleteImage(deleteIndex); 
+            }
+          } else {
+            handleDeletePresentation(); 
+          }
+        }}
         title="Delete"
         content={
           deleteIndex !== null
-            ? "Are you sure to delete this element?"
-            : "This presentation will be permanently deleted. Continue?"
+            ? "Are you sure to delete this element?" 
+            : "This presentation will be permanently deleted. Continue?" 
         }
       />
+
       <PresentationModal
         open={showEditModal}
         onClose={() => setShowEditModal(false)}
@@ -393,7 +460,7 @@ const PresentationDetail = () => {
         mode="edit"
         initialData={presentation}
       />
-      {editingElement && (
+      {editingElement?.type === "text" && (
         <TextModal
           presentationId={id}
           onSubmit={handleEditTextElsment}
@@ -401,7 +468,14 @@ const PresentationDetail = () => {
           onClose={() => setEditingElement(null)}
         />
       )}
-      
+      {editingElement?.type === "image" && (
+        <ImageModal
+          presentationId={id}
+          onSubmit={handleEditImage}
+          initialData={editingElement}
+          onClose={() => setEditingElement(null)}
+        />
+      )}
     </>
   );
 };
