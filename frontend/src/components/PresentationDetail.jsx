@@ -8,6 +8,7 @@ import PresentationModal from "./PresentationModal";
 import { Box } from "@mui/material";
 import TextModal from "./TextModal";
 import ImageModal from "./ImageModal";
+import VideoModal from "./VideoModal";
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
@@ -392,6 +393,7 @@ const handleDeleteImage = async (index) => {
       </Typography>
       <TextModal presentationId={id} onSubmit={handleToAddText} />
       <ImageModal presentationId={id} onSubmit={handleToAddImage} />
+      <VideoModal presentationId={id}/>
       <Box
         sx={{
           display: "flex",
