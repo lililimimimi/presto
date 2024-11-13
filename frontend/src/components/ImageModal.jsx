@@ -111,7 +111,9 @@ const ImageModal = ({
             id="size"
             label="Size"
             variant="outlined"
+            margin="normal"
             fullWidth
+            InputLabelProps={{ shrink: true }}
             onChange={(e) => setImageSize(e.target.value)}
             value={imageSize}
           />
@@ -119,6 +121,8 @@ const ImageModal = ({
             id="Font-size"
             label="Alt text"
             variant="outlined"
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
             fullWidth
             onChange={(e) => setImageAltText(e.target.value)}
             value={imageAltText}
@@ -128,6 +132,7 @@ const ImageModal = ({
             variant="outlined"
             fullWidth
             margin="normal"
+            InputLabelProps={{ shrink: true }}
             onChange={handleUrlChange}
             value={imageData}
             placeholder="https://example.com/image.jpg"

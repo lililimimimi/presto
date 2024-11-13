@@ -55,7 +55,9 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
 
   return (
     <Box>
-      {!initialData && <Button onClick={() => setOpen(true)}>Create a Video</Button>}
+      {!initialData && (
+        <Button onClick={() => setOpen(true)}>Create a Video</Button>
+      )}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}
@@ -69,6 +71,7 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
             variant="outlined"
             fullWidth
             margin="normal"
+            InputLabelProps={{ shrink: true }}
             onChange={(e) => setSize(e.target.value)}
             value={size}
           />
@@ -78,6 +81,7 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
             variant="outlined"
             fullWidth
             margin="normal"
+            InputLabelProps={{ shrink: true }}
             onChange={(e) => setUrl(e.target.value)}
             value={url}
           />

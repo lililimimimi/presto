@@ -22,6 +22,8 @@ const PresentationDetail = () => {
   const currentElements = presentation[currentIndex]?.elements || [];
   const [editingElement, setEditingElement] = useState(null);
   const [deleteIndex, setDeleteIndex] = useState(null);
+  const [selectedElement, setSelectedElement] = useState(null);
+  const [lastClickTime, setLastClickTime] = useState(0);
   const { id } = useParams();
 
   const handleDeleteClickModal = () => {
@@ -162,7 +164,6 @@ const handleEditElement = async (updatedData) => {
     await updateStore(updatedStore);
     setPresentation(presentation);
     setEditingElement(null);
-    setShowEditModal(false);
   } catch (error) {
     console.error("Failed to update element:", error);
   }
@@ -222,28 +223,32 @@ const handleDeleteElement = async (index) => {
   }
 };
   
- const handleElementClick = (element, index) => {
-   setEditingElement({ ...element, index });
-   if (element.type !== "text") {
-     setShowEditModal(true);
-   }
- };
- 
-const handleContextMenu = (e, index, element) => {
-  e.preventDefault();
-  e.stopPropagation();
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      if (selectedElement) {
+        e.preventDefault();
+        setDeleteIndex(selectedElement.index);
+        setShowDeleteModal(true);
+      }
+    };
+    window.addEventListener("contextmenu", handleContextMenu);
+    return () => {
+      window.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, [selectedElement]);
 
-  if (element.type === "text") {
-    setDeleteIndex(index);
-    setShowDeleteModal(true);
-  } else if (element.type === "image") {
-    setDeleteIndex(index);
-    setShowDeleteModal(true);
-  } else if (element.type === "video") {
-    setDeleteIndex(index);
-    setShowDeleteModal(true);
-  }
+const handleElementClick = (element, index) => {
+  const currentTime = new Date().getTime();
+  const timeDiff = currentTime - lastClickTime;
+if (selectedElement?.index === index && timeDiff < 300) {
+  console.log("Double click on:", element.type); 
+  setEditingElement({ ...element, index });
+} else {
+  setSelectedElement({ element, index });
+  setLastClickTime(currentTime);
+}
 };
+
 
   return (
     <>
@@ -285,7 +290,6 @@ const handleContextMenu = (e, index, element) => {
           <Box
             key={index}
             onClick={() => handleElementClick(element, index)}
-            onContextMenu={(e) => handleContextMenu(e, index)}
             style={{
               position: "absolute",
               top: `${element.position?.y || 0}%`,
@@ -293,7 +297,13 @@ const handleContextMenu = (e, index, element) => {
               width: `${element.size || 10}%`,
               height: `${element.size || 10}%`,
               overflow: "hidden",
-              border: "1px solid grey",
+              border: `1px solid ${
+                selectedElement?.index === index ? "#1976d2" : "grey"
+              }`,
+              backgroundColor:
+                selectedElement?.index === index
+                  ? "rgba(25, 118, 210, 0.1)"
+                  : "transparent",
               cursor: "pointer",
             }}
           >
@@ -456,7 +466,7 @@ const handleContextMenu = (e, index, element) => {
         />
       )}
       {editingElement?.type === "code" && (
-        <VideoModal
+        <CodeModal
           presentationId={id}
           onSubmit={handleEditElement}
           initialData={editingElement}

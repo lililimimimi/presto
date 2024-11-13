@@ -78,7 +78,10 @@ const TextModal = ({
               id="size"
               label="Size"
               variant="outlined"
+              margin="normal"
               fullWidth
+              type="number"
+              InputLabelProps={{ shrink: true }}
               onChange={(e) => setSize(e.target.value)}
               value={size}
             />
@@ -86,7 +89,9 @@ const TextModal = ({
               id="text"
               label="Text"
               variant="outlined"
+              margin="normal"
               fullWidth
+              InputLabelProps={{ shrink: true }}
               onChange={(e) => setText(e.target.value)}
               value={text}
             />
@@ -94,7 +99,10 @@ const TextModal = ({
               id="Font-size"
               label="Font Size"
               variant="outlined"
+              margin="normal"
               fullWidth
+              type="number"
+              InputLabelProps={{ shrink: true }}
               onChange={(e) => setFontSize(e.target.value)}
               value={fontSize}
             />
@@ -102,7 +110,9 @@ const TextModal = ({
               id="colour"
               label="Colour"
               variant="outlined"
+              margin="normal"
               fullWidth
+              InputLabelProps={{ shrink: true }}
               onChange={(e) => setColor(e.target.value)}
               value={color}
             />
