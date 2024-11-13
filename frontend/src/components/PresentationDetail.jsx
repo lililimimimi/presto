@@ -168,8 +168,13 @@ const PresentationDetail = () => {
     }
   };
   const handleTextElementClick = (element, index) => {
-    console.log("Element clicked:", element, index);
-    setEditingElement({ ...element, index });
+    if (element.type === "image") {
+
+      setEditingElement({ ...element, index });
+      setShowEditModal(true); 
+    } else if (element.type === "text") {
+      setEditingElement({ ...element, index });
+    }
   };
   const handleEditTextElsment = async (updatedData) => {
     try {
@@ -223,6 +228,38 @@ const PresentationDetail = () => {
     setDeleteIndex(index);
     setShowDeleteModal(true);
   };
+  const handleToAddImage = async (imageData) => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
+
+      if (!presentation[currentIndex]?.elements) {
+        presentation[currentIndex] = {
+          ...presentation[currentIndex],
+          elements: [],
+        };
+      }
+      presentation[currentIndex].elements.push({
+        ...imageData,
+        type: "image", 
+        position: imageData.position || { x: 0, y: 0 }, 
+      });
+
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: {
+            ...presentation,
+          },
+        },
+      };
+
+      await updateStore(updatedStore);
+      setPresentation(presentation);
+    } catch (error) {
+      console.error("Failed to add image:", error);
+    }
+  };
 
   return (
     <>
@@ -264,22 +301,30 @@ const PresentationDetail = () => {
           <Box
             key={index}
             onClick={() => handleTextElementClick(element, index)}
-            onContextMenu={(e) => {
-              handleContextMenu(e, index);
-            }}
+            onContextMenu={(e) => handleContextMenu(e, index)} 
             style={{
               position: "absolute",
-              top: `${element.position?.y}%`,
-              left: `${element.position?.x}%`,
-              width: `${element.size}%`,
-              weight: `${element.size}%`,
-              color: element.color,
-              fontSize: `${element.fontSize}em`,
+              top: `${element.position?.y || 0}%`,
+              left: `${element.position?.x || 0}%`,
+              width: `${element.size || 10}%`,
+              height: `${element.size || 10}%`,
               overflow: "hidden",
               border: "1px solid grey",
+              cursor: "pointer", 
             }}
           >
-            {element.text}
+            {element.type === "text" && <Box>{element.text}</Box>}
+            {element.type === "image" && (
+              <img
+                src={element.url}
+                alt={element.altText || "image"}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            )}
           </Box>
         ))}
       </Box>
@@ -287,7 +332,7 @@ const PresentationDetail = () => {
         {currentIndex}
       </Typography>
       <TextModal presentationId={id} onSubmit={handleToAddText} />
-      <ImageModal />
+      <ImageModal presentationId={id} onSubmit={handleToAddImage} />
       <Box
         sx={{
           display: "flex",
@@ -356,6 +401,7 @@ const PresentationDetail = () => {
           onClose={() => setEditingElement(null)}
         />
       )}
+      
     </>
   );
 };

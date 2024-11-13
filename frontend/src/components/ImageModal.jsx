@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
@@ -28,41 +28,56 @@ const ImageModal = ({
   const [imageAltText, setImageAltText] = useState(
     initialData?.imageAltText || ""
   );
-  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
+    const [imageData, setImageData] = useState(initialData?.url || "");
+    const fileInputRef = useRef(null);
 
   const handleClose = () => {
     setOpen(false);
     if (!initialData) {
       setImageSize("");
       setImageAltText("");
-      setImageUrl("");
+      setImageData(""); 
     }
     if (onClose) {
       onClose();
     }
   };
 
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageData(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+
   const handleSubmit = () => {
     const imageBox = {
+      type: "image",
       size: imageSize,
       altText: imageAltText,
-      url: imageUrl,
+      url: imageData,
       position: initialData?.position || { x: 0, y: 0 },
     };
-    console.log("Submitting textBox:", imageBox);
+    console.log("Submitting imageBox:", imageBox);
     onSubmit(imageBox);
     handleClose();
 
     if (!initialData) {
       setImageSize("");
       setImageAltText("");
-      setImageUrl("");
+      setImageData(""); 
     }
   };
 
   return (
     <Box>
-      {!initialData && <Button onClick={handleOpen}>Create a image box</Button>}
+      {!initialData && <Button onClick={handleOpen}>Create an image box</Button>}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}
@@ -88,20 +103,33 @@ const ImageModal = ({
           />
           <TextField
             id="url"
-            label="Url"
+            label="URL"
             variant="outlined"
             fullWidth
-            onChange={(e) => setImageUrl(e.target.value)}
-            value={imageUrl}
+            onChange={(e) => setImageData(e.target.value)}
+            value={imageData}
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept="image/*"
+            onChange={handleFileSelect}
           />
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr", 
+              gridTemplateColumns: "1fr 1fr",
               gap: 2,
               mt: 2,
             }}
           >
+            <Button
+              variant="contained"
+              onClick={() => fileInputRef.current.click()}
+            >
+              Upload Image
+            </Button>
             <Button variant="contained" onClick={handleSubmit}>
               {initialData ? "Update" : "Add"}
             </Button>
