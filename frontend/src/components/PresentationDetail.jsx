@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import TextModal from "./TextModal";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
+import CodeModal from "./CodeModal";
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
@@ -332,6 +333,29 @@ const handleContextMenu = (e, index, element) => {
                 title="Embedded video"
               />
             )}
+            {element.type === "code" && (
+              <pre
+                style={{
+                  margin: 0,
+                  padding: "1em",
+                  fontSize: element.fontSize || "1em",
+                  fontFamily: "monospace",
+                  width: "100%",
+                  height: "100%",
+                  overflow: "auto",
+                  backgroundColor: "#f5f5f5",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                }}
+              >
+                <code
+                  dangerouslySetInnerHTML={{
+                    __html: element.highlightedCode,
+                  }}
+                  className={`language-${element.language}`}
+                />
+              </pre>
+            )}
           </Box>
         ))}
       </Box>
@@ -341,6 +365,7 @@ const handleContextMenu = (e, index, element) => {
       <TextModal presentationId={id} onSubmit={handleAddElement} />
       <ImageModal presentationId={id} onSubmit={handleAddElement} />
       <VideoModal presentationId={id} onSubmit={handleAddElement} />
+      <CodeModal presentationId={id} onSubmit={handleAddElement} />
       <Box
         sx={{
           display: "flex",
@@ -394,7 +419,7 @@ const handleContextMenu = (e, index, element) => {
         }
       />
 
-      {showEditModal && ( 
+      {showEditModal && (
         <PresentationModal
           open={showEditModal}
           onClose={() => setShowEditModal(false)}
@@ -423,6 +448,14 @@ const handleContextMenu = (e, index, element) => {
         />
       )}
       {editingElement?.type === "video" && (
+        <VideoModal
+          presentationId={id}
+          onSubmit={handleEditElement}
+          initialData={editingElement}
+          onClose={() => setEditingElement(null)}
+        />
+      )}
+      {editingElement?.type === "code" && (
         <VideoModal
           presentationId={id}
           onSubmit={handleEditElement}
