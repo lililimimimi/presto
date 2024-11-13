@@ -5,7 +5,8 @@ import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
 import ErrorModal from "./ErrorModal";
 import PresentationModal from "./PresentationModal";
-import { Box, keyframes } from "@mui/material";
+import { Box} from "@mui/material";
+import SlideModal from "./SlideModal";
 
 
 const PresentationDetail = () => {
@@ -16,6 +17,7 @@ const PresentationDetail = () => {
   const [showEditModal, setShowEditModal] = useState(false); 
   const [currentIndex, setCurrentIndex] = useState(1);
   const[sliedeCount, setSlideCount] = useState(1);
+  const currentElements = presentation[currentIndex]?.elements || [];
   const { id } = useParams();
 
 
@@ -75,9 +77,9 @@ const PresentationDetail = () => {
 
   useEffect(()=>{
     const keydown =(e) =>{
-        if(e.key === 'ArrayLeft'){
-            handleToPre();
-        }else if (e.key === "ArrayRight") {
+        if (e.key === "ArrowLeft") {
+          handleToPre();
+        } else if (e.key === "ArrowRight") {
           handleToNext();
         }
     }
@@ -135,11 +137,46 @@ const handleDeleteSlide = async()=>{
     };
         delete updatedStore.store[id][currentIndex];
         await updateStore(updatedStore);
+         setSlideCount((prev) => prev - 1);
+          if (currentIndex === slides.length) {
+            setCurrentIndex((prev) => prev - 1);
+          }
         getPresentationDetail();
       } catch (error) {
       }
     
 }
+const handleToAddText = async (textBoxData) => {
+  try {
+
+    const data = await getStore();
+    const presentation = data.store[id];
+
+
+    if (!presentation[currentIndex]?.elements) {
+      presentation[currentIndex] = {
+        ...presentation[currentIndex],
+        elements: [],
+      };
+    }
+    presentation[currentIndex].elements.push(textBoxData);
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: {
+          ...presentation,
+        },
+      },
+    };
+
+    await updateStore(updatedStore);
+  } catch (error) {
+    console.error("Failed to create new slide:", error);
+  }
+};
+
+
 
   return (
     <>
@@ -160,7 +197,12 @@ const handleDeleteSlide = async()=>{
         {presentation.description}
       </Typography>
       <Box
-        style={{ width: "100%", height: "500px", border: "1px solid black" }}
+        style={{
+          width: "100%",
+          height: "500px",
+          border: "1px solid black",
+          position: "relative",
+        }}
       >
         <Button variant="contained" onClick={createNewSlide}>
           Create
@@ -172,10 +214,27 @@ const handleDeleteSlide = async()=>{
         >
           Delete Slide
         </Button>
+        {currentElements.map((element, index) => (
+          <Box
+            key={index}
+            style={{
+              position: "absolute",
+              top: `${element.position?.y}%`,
+              left: `${element.position?.x}%`,
+              color: element.color,
+              fontSize: `${element.fontSize}em`,
+              overflow: "hidden",
+              border: "1px solid grey",
+            }}
+          >
+            {element.text}
+          </Box>
+        ))}
       </Box>
       <Typography gutterBottom variant="h5" component="div">
         {currentIndex}
       </Typography>
+      <SlideModal presentationId={id} onSubmit={handleToAddText} />
       <Box
         sx={{
           display: "flex",
