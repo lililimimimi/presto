@@ -16,39 +16,57 @@ const style = {
   p: 4,
 };
 
-const SlideModal = ({ onSubmit, presentationId }) => {
-  const [open, setOpen] = useState(false);
+const SlideModal = ({
+  onSubmit,
+  presentationId,
+  initialData = null,
+  onClose,
+}) => {
+  const [open, setOpen] = useState(Boolean(initialData));
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [size, setSize] = useState("");
-  const [text, setText] = useState("");
-  const [fontSize, setFontSize] = useState("");
-  const [color, setColor] = useState("");
+  const [size, setSize] = useState(initialData?.size || "");
+  const [text, setText] = useState(initialData?.text || "");
+  const [fontSize, setFontSize] = useState(initialData?.fontSize || "");
+  const [color, setColor] = useState(initialData?.color || "");
 
-const handleSubmit = () => {
-  const textBox = {
-    size,
-    text,
-    fontSize,
-    color,
-    position: { x: 0, y: 0 },
+  const handleClose = () => {
+    setOpen(false);
+    if (!initialData) {
+      setSize("");
+      setText("");
+      setFontSize("");
+      setColor("");
+    }
+    if (onClose) {
+      onClose();
+    }
   };
-console.log("Submitting textBox:", textBox); 
-  onSubmit(textBox); 
 
-  setSize("");
-  setText("");
-  setFontSize("");
-  setColor("");
-  handleClose();
-};
+  const handleSubmit = () => {
+    const textBox = {
+      size,
+      text,
+      fontSize,
+      color,
+      position: initialData?.position || { x: 0, y: 0 },
+    };
+    console.log("Submitting textBox:", textBox);
+    onSubmit(textBox);
+    handleClose();
 
+    if (!initialData) {
+      setSize("");
+      setText("");
+      setFontSize("");
+      setColor("");
+    }
+  };
 
   return (
     <Box>
-      <Button onClick={handleOpen}>Create a text box</Button>
+      {!initialData && <Button onClick={handleOpen}>Create a text box</Button>}
       <Modal
-        open={open}
+        open={initialData ? true : open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -87,7 +105,7 @@ console.log("Submitting textBox:", textBox);
             value={color}
           />
           <Button variant="contained" onClick={handleSubmit}>
-            Add
+            {initialData ? "Update" : "Add"}
           </Button>
           <Button variant="contained" onClick={handleClose}>
             Cancel

@@ -18,6 +18,7 @@ const PresentationDetail = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const[sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
+  const [editingElement, setEditingElement] = useState(null);
   const { id } = useParams();
 
 
@@ -175,6 +176,30 @@ const handleToAddText = async (textBoxData) => {
     console.error("Failed to create new slide:", error);
   }
 };
+ const handleElementDoubleClick = (element, index) => {
+   setEditingElement({ ...element, index });
+ };
+const handleEditSubmit = async (updatedData) => {
+     try {
+       const data = await getStore();
+       const presentation = data.store[id];
+
+       presentation[currentIndex].elements[editingElement.index] = updatedData;
+
+       const updatedStore = {
+         store: {
+           ...data.store,
+           [id]: presentation,
+         },
+       };
+
+       await updateStore(updatedStore);
+       setPresentation(presentation);
+       setEditingElement(null);
+     } catch (error) {
+       console.error("Failed to update element:", error);
+     }
+   };
 
 
 
@@ -217,6 +242,7 @@ const handleToAddText = async (textBoxData) => {
         {currentElements.map((element, index) => (
           <Box
             key={index}
+            onClick={() => handleElementDoubleClick(element, index)}
             style={{
               position: "absolute",
               top: `${element.position?.y}%`,
@@ -284,6 +310,14 @@ const handleToAddText = async (textBoxData) => {
         mode="edit"
         initialData={presentation}
       />
+      {editingElement && (
+        <SlideModal
+          presentationId={id}
+          onSubmit={handleEditSubmit}
+          initialData={editingElement}
+          onClose={() => setEditingElement(null)}
+        />
+      )}
     </>
   );
 };
