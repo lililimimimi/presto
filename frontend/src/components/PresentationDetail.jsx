@@ -169,14 +169,8 @@ const PresentationDetail = () => {
     }
   };
   const handleTextElementClick = (element, index) => {
-    if (element.type === "image") {
-
-      setEditingElement({ ...element, index });
-      setShowEditModal(true); 
-    } else{
-      setEditingElement({ ...element, index });
-    }
-  };
+   setEditingElement({ ...element, index });
+  }
   const handleEditTextElsment = async (updatedData) => {
     try {
       const data = await getStore();
@@ -227,12 +221,14 @@ const handleContextMenu = (e, index, element) => {
   e.stopPropagation();
 
   if (element.type === "text") {
-    setDeleteIndex(index); 
-    setShowDeleteModal(true); 
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
   } else if (element.type === "image") {
-
-    setDeleteIndex(index); 
-    setShowDeleteModal(true); 
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
+  } else if (element.type === "video") {
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
   }
 };
 
@@ -349,6 +345,32 @@ const handleToAddVideo = async (videoData) => {
     setPresentation(presentation); 
   } catch (error) {
     console.error("Failed to add video:", error); 
+  }
+};
+const handleEditVideo = async (updatedData) => {
+  try {
+    const data = await getStore();
+
+    const presentation = data.store[id];
+
+    presentation[currentIndex].elements[editingElement.index] = {
+      ...presentation[currentIndex].elements[editingElement.index],
+      ...updatedData,
+    };
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: presentation,
+      },
+    };
+
+    await updateStore(updatedStore);
+
+    setPresentation(presentation);
+    setEditingElement(null);
+  } catch (error) {
+    console.error("Failed to update video element:", error);
   }
 };
 
@@ -531,6 +553,14 @@ const handleToAddVideo = async (videoData) => {
         <ImageModal
           presentationId={id}
           onSubmit={handleEditImage}
+          initialData={editingElement}
+          onClose={() => setEditingElement(null)}
+        />
+      )}
+      {editingElement?.type === "video" && (
+        <VideoModal
+          presentationId={id}
+          onSubmit={handleEditVideo}
           initialData={editingElement}
           onClose={() => setEditingElement(null)}
         />
