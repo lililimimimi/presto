@@ -5,11 +5,11 @@ import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
 import ErrorModal from "./ErrorModal";
 import PresentationModal from "./PresentationModal";
-import { Box } from "@mui/material";
 import TextModal from "./TextModal";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
 import CodeModal from "./CodeModal";
+import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material"; 
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
@@ -24,7 +24,16 @@ const PresentationDetail = () => {
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [selectedElement, setSelectedElement] = useState(null);
   const [lastClickTime, setLastClickTime] = useState(0);
+  const [globalFontFamily, setGlobalFontFamily] = useState("Arial, sans-serif");
   const { id } = useParams();
+
+   const fontFamilies = [
+     { value: "Arial, sans-serif", label: "Arial" },
+     { value: "Times New Roman, serif", label: "Times New Roman" },
+     { value: "Courier New, monospace", label: "Courier New" },
+     { value: "Georgia, serif", label: "Georgia" },
+     { value: "Helvetica, sans-serif", label: "Helvetica" },
+   ];
 
   const handleDeleteClickModal = () => {
     setShowDeleteModal(true);
@@ -249,6 +258,43 @@ if (selectedElement?.index === index && timeDiff < 300) {
 }
 };
 
+const handleFontFamilyChange = async (event) => {
+  try {
+    const newFontFamily = event.target.value;
+    setGlobalFontFamily(newFontFamily);
+
+    const data = await getStore();
+    const presentation = data.store[id];
+
+    Object.keys(presentation).forEach((key) => {
+      if (!isNaN(key) && presentation[key].elements) {
+        presentation[key].elements = presentation[key].elements.map(
+          (element) => {
+            if (element.type === "text") {
+              return {
+                ...element,
+                fontFamily: newFontFamily,
+              };
+            }
+            return element;
+          }
+        );
+      }
+    });
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: presentation,
+      },
+    };
+
+    await updateStore(updatedStore);
+    setPresentation(presentation);
+  } catch (error) {
+    console.error("Failed to update font family:", error);
+  }
+};
 
   return (
     <>
@@ -261,7 +307,6 @@ if (selectedElement?.index === index && timeDiff < 300) {
       <Button variant="contained" onClick={() => setShowEditModal(true)}>
         Edit
       </Button>
-
       <Typography gutterBottom variant="h5" component="div">
         Title: {presentation?.Title || "Loading..."}
       </Typography>
@@ -278,6 +323,28 @@ if (selectedElement?.index === index && timeDiff < 300) {
       >
         Delete Slide
       </Button>
+      
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel>Font Family</InputLabel>
+          <Select
+            value={globalFontFamily}
+            onChange={handleFontFamilyChange}
+            label="Font Family"
+            
+          >
+            {fontFamilies.map((font) => (
+              <MenuItem
+                key={font.value}
+                value={font.value}
+                sx={{ fontFamily: font.value }}
+              >
+                {font.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
       <Box
         style={{
           width: "100%",
@@ -312,6 +379,7 @@ if (selectedElement?.index === index && timeDiff < 300) {
                 style={{
                   fontSize: `${element.fontSize || 1}em`,
                   color: element.color || "#000000",
+                  fontFamily: element.fontFamily || globalFontFamily,
                 }}
               >
                 {element.text}
@@ -372,6 +440,7 @@ if (selectedElement?.index === index && timeDiff < 300) {
       <Typography gutterBottom variant="h5" component="div">
         {currentIndex}
       </Typography>
+
       <TextModal presentationId={id} onSubmit={handleAddElement} />
       <ImageModal presentationId={id} onSubmit={handleAddElement} />
       <VideoModal presentationId={id} onSubmit={handleAddElement} />
@@ -407,7 +476,6 @@ if (selectedElement?.index === index && timeDiff < 300) {
           Next
         </Button>
       </Box>
-
       <ErrorModal
         open={showDeleteModal}
         onClose={() => {
@@ -428,7 +496,6 @@ if (selectedElement?.index === index && timeDiff < 300) {
             : "This presentation will be permanently deleted. Continue?"
         }
       />
-
       {showEditModal && (
         <PresentationModal
           open={showEditModal}

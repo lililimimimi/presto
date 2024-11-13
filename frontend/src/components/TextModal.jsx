@@ -110,6 +110,7 @@ const TextModal = ({
               id="colour"
               label="Colour"
               variant="outlined"
+              type="color"
               margin="normal"
               fullWidth
               InputLabelProps={{ shrink: true }}
