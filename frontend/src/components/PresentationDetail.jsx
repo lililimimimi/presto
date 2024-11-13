@@ -24,7 +24,8 @@ const PresentationDetail = () => {
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [selectedElement, setSelectedElement] = useState(null);
   const [lastClickTime, setLastClickTime] = useState(0);
-  const [globalFontFamily, setGlobalFontFamily] = useState("Arial, sans-serif");
+  const [selectedTextBox, setSelectedTextBox] = useState(null);
+  const [currentFont, setCurrentFont] = useState("Arial, sans-serif"); 
   const { id } = useParams();
 
    const fontFamilies = [
@@ -257,30 +258,20 @@ if (selectedElement?.index === index && timeDiff < 300) {
   setLastClickTime(currentTime);
 }
 };
+const handleFontChange = async (event) => {
+  if (selectedTextBox === null) return; 
 
-const handleFontFamilyChange = async (event) => {
   try {
-    const newFontFamily = event.target.value;
-    setGlobalFontFamily(newFontFamily);
+    const newFont = event.target.value;
+    setCurrentFont(newFont);
 
     const data = await getStore();
     const presentation = data.store[id];
 
-    Object.keys(presentation).forEach((key) => {
-      if (!isNaN(key) && presentation[key].elements) {
-        presentation[key].elements = presentation[key].elements.map(
-          (element) => {
-            if (element.type === "text") {
-              return {
-                ...element,
-                fontFamily: newFontFamily,
-              };
-            }
-            return element;
-          }
-        );
-      }
-    });
+    presentation[currentIndex].elements[selectedTextBox] = {
+      ...presentation[currentIndex].elements[selectedTextBox],
+      fontFamily: newFont,
+    };
 
     const updatedStore = {
       store: {
@@ -292,7 +283,7 @@ const handleFontFamilyChange = async (event) => {
     await updateStore(updatedStore);
     setPresentation(presentation);
   } catch (error) {
-    console.error("Failed to update font family:", error);
+    console.error("Failed to update font:", error);
   }
 };
 
@@ -323,15 +314,14 @@ const handleFontFamilyChange = async (event) => {
       >
         Delete Slide
       </Button>
-      
+
       <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
         <FormControl sx={{ minWidth: 200 }}>
           <InputLabel>Font Family</InputLabel>
           <Select
-            value={globalFontFamily}
-            onChange={handleFontFamilyChange}
+            value={currentFont}
+            onChange={handleFontChange}
             label="Font Family"
-            
           >
             {fontFamilies.map((font) => (
               <MenuItem
@@ -375,15 +365,22 @@ const handleFontFamilyChange = async (event) => {
             }}
           >
             {element.type === "text" && (
-              <Typography
-                style={{
-                  fontSize: `${element.fontSize || 1}em`,
-                  color: element.color || "#000000",
-                  fontFamily: element.fontFamily || globalFontFamily,
-                }}
-              >
-                {element.text}
-              </Typography>
+              <Box position="relative">
+                <Typography
+                  style={{
+                    fontSize: `${element.fontSize || 1}em`,
+                    color: element.color || "#000000",
+                    fontFamily: element.fontFamily || currentFont,
+                    wordWrap: "break-word",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedTextBox(index);
+                  }}
+                >
+                  {element.text}
+                </Typography>
+              </Box>
             )}
             {element.type === "image" && (
               <img
