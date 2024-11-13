@@ -318,6 +318,39 @@ const handleDeleteImage = async (index) => {
     console.error("Failed to delete image element:", error); 
   }
 };
+const handleToAddVideo = async (videoData) => {
+  try {
+    const data = await getStore(); 
+    const presentation = data.store[id]; 
+
+    if (!presentation[currentIndex]?.elements) {
+      presentation[currentIndex] = {
+        ...presentation[currentIndex],
+        elements: [],
+      };
+    }
+
+    presentation[currentIndex].elements.push({
+      ...videoData,
+      type: "video", 
+      position: videoData.position || { x: 0, y: 0 }, 
+    });
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: {
+          ...presentation,
+        },
+      },
+    };
+
+    await updateStore(updatedStore); 
+    setPresentation(presentation); 
+  } catch (error) {
+    console.error("Failed to add video:", error); 
+  }
+};
 
 
 
@@ -373,7 +406,16 @@ const handleDeleteImage = async (index) => {
               cursor: "pointer",
             }}
           >
-            {element.type === "text" && <Box>{element.text}</Box>}
+            {element.type === "text" && (
+              <Typography
+                style={{
+                  fontSize: `${element.fontSize || 1}em`,
+                  color: element.color || "#000000",
+                }}
+              >
+                {element.text}
+              </Typography>
+            )}
             {element.type === "image" && (
               <img
                 src={element.url}
@@ -385,6 +427,21 @@ const handleDeleteImage = async (index) => {
                 }}
               />
             )}
+            {element.type === "video" && (
+              <iframe
+                src={`${element.url}${
+                  element.url.includes("?") ? "&" : "?"
+                }autoplay=${element.autoplay ? 1 : 0}`}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Embedded video"
+              />
+            )}
           </Box>
         ))}
       </Box>
@@ -393,7 +450,7 @@ const handleDeleteImage = async (index) => {
       </Typography>
       <TextModal presentationId={id} onSubmit={handleToAddText} />
       <ImageModal presentationId={id} onSubmit={handleToAddImage} />
-      <VideoModal presentationId={id}/>
+      <VideoModal presentationId={id} onSubmit={handleToAddVideo} />
       <Box
         sx={{
           display: "flex",
@@ -434,21 +491,21 @@ const handleDeleteImage = async (index) => {
         }}
         onConfirm={() => {
           if (deleteIndex !== null) {
-            const element = currentElements[deleteIndex]; 
+            const element = currentElements[deleteIndex];
             if (element?.type === "text") {
-              handleDeleteTextElement(deleteIndex); 
+              handleDeleteTextElement(deleteIndex);
             } else if (element?.type === "image") {
-              handleDeleteImage(deleteIndex); 
+              handleDeleteImage(deleteIndex);
             }
           } else {
-            handleDeletePresentation(); 
+            handleDeletePresentation();
           }
         }}
         title="Delete"
         content={
           deleteIndex !== null
-            ? "Are you sure to delete this element?" 
-            : "This presentation will be permanently deleted. Continue?" 
+            ? "Are you sure to delete this element?"
+            : "This presentation will be permanently deleted. Continue?"
         }
       />
 

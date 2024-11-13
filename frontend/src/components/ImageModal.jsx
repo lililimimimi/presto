@@ -55,6 +55,26 @@ const ImageModal = ({
     }
   };
 
+    const extractImageUrl = (googleUrl) => {
+      try {
+        const url = new URL(googleUrl);
+        if (url.hostname === "www.google.com" && url.pathname === "/imgres") {
+          const imgUrl = url.searchParams.get("imgurl");
+          if (imgUrl) {
+            return decodeURIComponent(imgUrl);
+          }
+        }
+        return googleUrl;
+      } catch (e) {
+        return googleUrl;
+      }
+    };
+
+  const handleUrlChange = (e) => {
+    const inputUrl = e.target.value;
+    const imageUrl = extractImageUrl(inputUrl);
+    setImageData(imageUrl);
+  };
 
   const handleSubmit = () => {
     const imageBox = {
@@ -77,7 +97,9 @@ const ImageModal = ({
 
   return (
     <Box>
-      {!initialData && <Button onClick={handleOpen}>Create an image box</Button>}
+      {!initialData && (
+        <Button onClick={handleOpen}>Create an image box</Button>
+      )}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}
@@ -102,12 +124,13 @@ const ImageModal = ({
             value={imageAltText}
           />
           <TextField
-            id="url"
-            label="URL"
+            label="Image URL"
             variant="outlined"
             fullWidth
-            onChange={(e) => setImageData(e.target.value)}
+            margin="normal"
+            onChange={handleUrlChange}
             value={imageData}
+            placeholder="https://example.com/image.jpg"
           />
           <input
             type="file"

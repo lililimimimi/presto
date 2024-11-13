@@ -26,6 +26,11 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
 
   const handleClose = () => {
     setOpen(false);
+        if (!initialData) {
+          setSize("");
+          setUrl("");
+          setAutoplay(false);
+        }
        if (onClose) {
       onClose();
        }
@@ -41,6 +46,11 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
     };
     onSubmit(videoData);
     handleClose();
+      if (!initialData) {
+        setSize("");
+        setUrl("");
+        setAutoplay(false);
+      }
   };
 
   return (
