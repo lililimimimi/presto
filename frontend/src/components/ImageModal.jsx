@@ -16,7 +16,7 @@ const style = {
   p: 4,
 };
 
-const SlideModal = ({
+const ImageModal = ({
   onSubmit,
   presentationId,
   initialData = null,
@@ -24,18 +24,18 @@ const SlideModal = ({
 }) => {
   const [open, setOpen] = useState(Boolean(initialData));
   const handleOpen = () => setOpen(true);
-  const [size, setSize] = useState(initialData?.size || "");
-  const [text, setText] = useState(initialData?.text || "");
-  const [fontSize, setFontSize] = useState(initialData?.fontSize || "");
-  const [color, setColor] = useState(initialData?.color || "");
+  const [imageSize, setImageSize] = useState(initialData?.imageSize || "");
+  const [imageAltText, setImageAltText] = useState(
+    initialData?.imageAltText || ""
+  );
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
 
   const handleClose = () => {
     setOpen(false);
     if (!initialData) {
-      setSize("");
-      setText("");
-      setFontSize("");
-      setColor("");
+      setImageSize("");
+      setImageAltText("");
+      setImageUrl("");
     }
     if (onClose) {
       onClose();
@@ -43,28 +43,26 @@ const SlideModal = ({
   };
 
   const handleSubmit = () => {
-    const textBox = {
-      size,
-      text,
-      fontSize,
-      color,
+    const imageBox = {
+      size: imageSize,
+      altText: imageAltText,
+      url: imageUrl,
       position: initialData?.position || { x: 0, y: 0 },
     };
-    console.log("Submitting textBox:", textBox);
-    onSubmit(textBox);
+    console.log("Submitting textBox:", imageBox);
+    onSubmit(imageBox);
     handleClose();
 
     if (!initialData) {
-      setSize("");
-      setText("");
-      setFontSize("");
-      setColor("");
+      setImageSize("");
+      setImageAltText("");
+      setImageUrl("");
     }
   };
 
   return (
     <Box>
-      {!initialData && <Button onClick={handleOpen}>Create a text box</Button>}
+      {!initialData && <Button onClick={handleOpen}>Create a image box</Button>}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}
@@ -77,42 +75,43 @@ const SlideModal = ({
             label="Size"
             variant="outlined"
             fullWidth
-            onChange={(e) => setSize(e.target.value)}
-            value={size}
-          />
-          <TextField
-            id="text"
-            label="Text"
-            variant="outlined"
-            fullWidth
-            onChange={(e) => setText(e.target.value)}
-            value={text}
+            onChange={(e) => setImageSize(e.target.value)}
+            value={imageSize}
           />
           <TextField
             id="Font-size"
-            label="Font Size"
+            label="Alt text"
             variant="outlined"
             fullWidth
-            onChange={(e) => setFontSize(e.target.value)}
-            value={fontSize}
+            onChange={(e) => setImageAltText(e.target.value)}
+            value={imageAltText}
           />
           <TextField
-            id="colour"
-            label="Colour"
+            id="url"
+            label="Url"
             variant="outlined"
             fullWidth
-            onChange={(e) => setColor(e.target.value)}
-            value={color}
+            onChange={(e) => setImageUrl(e.target.value)}
+            value={imageUrl}
           />
-          <Button variant="contained" onClick={handleSubmit}>
-            {initialData ? "Update" : "Add"}
-          </Button>
-          <Button variant="contained" onClick={handleClose}>
-            Cancel
-          </Button>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr", 
+              gap: 2,
+              mt: 2,
+            }}
+          >
+            <Button variant="contained" onClick={handleSubmit}>
+              {initialData ? "Update" : "Add"}
+            </Button>
+            <Button variant="contained" onClick={handleClose}>
+              Cancel
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </Box>
   );
 };
-export default SlideModal;
+export default ImageModal;
