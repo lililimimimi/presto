@@ -19,6 +19,7 @@ const PresentationDetail = () => {
   const[sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
   const [editingElement, setEditingElement] = useState(null);
+  const [deleteIndex, setDeleteIndex] = useState(null);
   const { id } = useParams();
 
 
@@ -172,14 +173,16 @@ const handleToAddText = async (textBoxData) => {
     };
 
     await updateStore(updatedStore);
+    setPresentation(presentation); 
   } catch (error) {
     console.error("Failed to create new slide:", error);
   }
 };
- const handleElementDoubleClick = (element, index) => {
+ const handleTextElementClick = (element, index) => {
+   console.log("Element clicked:", element, index); 
    setEditingElement({ ...element, index });
  };
-const handleEditSubmit = async (updatedData) => {
+const handleEditTextElsment = async (updatedData) => {
      try {
        const data = await getStore();
        const presentation = data.store[id];
@@ -201,6 +204,36 @@ const handleEditSubmit = async (updatedData) => {
      }
    };
 
+const handleDeleteTextElement = async (index) => {
+  try {
+    const data = await getStore();
+    const presentation = data.store[id];
+    presentation[currentIndex].elements = presentation[
+      currentIndex
+    ].elements.filter((_, i) => i !== index);
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: presentation,
+      },
+    };
+
+    await updateStore(updatedStore);
+    setPresentation(presentation);
+    setShowDeleteModal(false); 
+    setDeleteIndex(null);
+  } catch (error) {
+    console.error("Failed to delete element:", error);
+  }
+};
+const handleContextMenu = (e, index) => {
+  console.log("Right click triggered", index); 
+  e.preventDefault(); 
+  e.stopPropagation(); 
+  setDeleteIndex(index);
+  setShowDeleteModal(true);
+};
 
 
   return (
@@ -242,7 +275,10 @@ const handleEditSubmit = async (updatedData) => {
         {currentElements.map((element, index) => (
           <Box
             key={index}
-            onClick={() => handleElementDoubleClick(element, index)}
+            onClick={() => handleTextElementClick(element, index)}
+            onContextMenu={(e) => {
+              handleContextMenu(e, index);
+            }}
             style={{
               position: "absolute",
               top: `${element.position?.y}%`,
@@ -251,6 +287,7 @@ const handleEditSubmit = async (updatedData) => {
               fontSize: `${element.fontSize}em`,
               overflow: "hidden",
               border: "1px solid grey",
+              cursor: "pointer",
             }}
           >
             {element.text}
@@ -295,10 +332,21 @@ const handleEditSubmit = async (updatedData) => {
 
       <ErrorModal
         open={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDeletePresentation}
-        title="Delete Presentation"
-        content="This presentation will be permanently deleted. Continue?"
+        onClose={() => {
+          setShowDeleteModal(false);
+          setDeleteIndex(null);
+        }}
+        onConfirm={
+          deleteIndex !== null
+            ? handleDeleteTextElement
+            : handleDeletePresentation
+        }
+        title="Delete"
+        content={
+          deleteIndex !== null
+            ? "Are you sure to delete this element?"
+            : "This presentation will be permanently deleted. Continue?"
+        }
       />
       <PresentationModal
         open={showEditModal}
@@ -313,7 +361,7 @@ const handleEditSubmit = async (updatedData) => {
       {editingElement && (
         <SlideModal
           presentationId={id}
-          onSubmit={handleEditSubmit}
+          onSubmit={handleEditTextElsment}
           initialData={editingElement}
           onClose={() => setEditingElement(null)}
         />
