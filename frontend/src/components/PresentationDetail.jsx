@@ -5,40 +5,39 @@ import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
 import ErrorModal from "./ErrorModal";
 import PresentationModal from "./PresentationModal";
-import { Box} from "@mui/material";
-import SlideModal from "./SlideModal";
-
+import { Box } from "@mui/material";
+import TextModal from "./TextModal";
+import ImageModal from "./ImageModal";
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
   const [presentation, setPresentation] = useState({});
   const [loading, setLoading] = useState(true);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); 
-  const [showEditModal, setShowEditModal] = useState(false); 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(1);
-  const[sliedeCount, setSlideCount] = useState(1);
+  const [sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
   const [editingElement, setEditingElement] = useState(null);
   const [deleteIndex, setDeleteIndex] = useState(null);
   const { id } = useParams();
 
-
   const handleDeleteClickModal = () => {
-    setShowDeleteModal(true); 
+    setShowDeleteModal(true);
   };
 
   const getPresentationDetail = async () => {
-     setLoading(true);
+    setLoading(true);
     try {
       const data = await getStore();
       if (data && data.store) {
-        const presentationDetail = data.store[id]; 
+        const presentationDetail = data.store[id];
         if (presentationDetail) {
           setPresentation({ id, ...presentationDetail });
-        const slides = Object.keys(presentationDetail).filter(
-          (key) => !isNaN(key)
-        );
-        setSlideCount(slides.length);
+          const slides = Object.keys(presentationDetail).filter(
+            (key) => !isNaN(key)
+          );
+          setSlideCount(slides.length);
         } else {
           console.error("Presentation not found");
         }
@@ -47,194 +46,183 @@ const PresentationDetail = () => {
       console.error("Error fetching presentations:", error);
     }
   };
-  useEffect(()=>{
+  useEffect(() => {
     getPresentationDetail();
-  },[id])
+  }, [id]);
 
   const handleDeletePresentation = async () => {
-      try {
-        const data = await getStore();
+    try {
+      const data = await getStore();
 
-        const updatedStore = {
-          store: { ...data.store },
-        };
-        delete updatedStore.store[id];
-
-        await updateStore(updatedStore);
-        setShowDeleteModal(false); 
-         navigate("/dashboard");
-
-      } catch (error) {
-        setError("Failed to delete presentation");
-      }
-    
-  };
-  const handleToPre=()=>{
-    setCurrentIndex(pre=>(pre > 1 ? pre -1 : pre));
-  }
-
-  const handleToNext =()=> {
-    setCurrentIndex(pre => (pre < sliedeCount ? pre +1 : pre));
-  }
-
-  useEffect(()=>{
-    const keydown =(e) =>{
-        if (e.key === "ArrowLeft") {
-          handleToPre();
-        } else if (e.key === "ArrowRight") {
-          handleToNext();
-        }
-    }
-    window.addEventListener('keydown',keydown)
-   return () => [window.removeEventListener("keydown", keydown)];
-  },[currentIndex,sliedeCount])
-
-const createNewSlide = async () => {
-  try {
-
-    const data = await getStore();
-
-    const presentation = data.store[id];
-    const newSlideNumber =
-      Object.keys(presentation).filter((key) => !isNaN(key)).length + 1; 
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: {
-          ...presentation,
-          [newSlideNumber]: {}, 
-        },
-      },
-    };
-    await updateStore(updatedStore);
-    getPresentationDetail();
-    setCurrentIndex(newSlideNumber);
-  } catch (error) {
-    console.error("Failed to create new slide:", error);
-
-  }
-};
-
-const handleDeleteSlide = async()=>{
- try {
-        const data = await getStore();
-        const presentation = data.store[id];
-
-           const slides = Object.keys(presentation).filter(
-             (key) => !isNaN(key)
-           );
-           if (slides.length <= 1) {
-             alert("Cannot delete the last slide");
-             return;
-           }
-
-        const updatedStore = {
-          store: {
-        ...data.store,
-        [id]: {
-          ...presentation,
-        }
-      }
-    };
-        delete updatedStore.store[id][currentIndex];
-        await updateStore(updatedStore);
-         setSlideCount((prev) => prev - 1);
-          if (currentIndex === slides.length) {
-            setCurrentIndex((prev) => prev - 1);
-          }
-        getPresentationDetail();
-      } catch (error) {
-      }
-    
-}
-const handleToAddText = async (textBoxData) => {
-  try {
-
-    const data = await getStore();
-    const presentation = data.store[id];
-
-
-    if (!presentation[currentIndex]?.elements) {
-      presentation[currentIndex] = {
-        ...presentation[currentIndex],
-        elements: [],
+      const updatedStore = {
+        store: { ...data.store },
       };
+      delete updatedStore.store[id];
+
+      await updateStore(updatedStore);
+      setShowDeleteModal(false);
+      navigate("/dashboard");
+    } catch (error) {
+      setError("Failed to delete presentation");
     }
-    presentation[currentIndex].elements.push(textBoxData);
+  };
+  const handleToPre = () => {
+    setCurrentIndex((pre) => (pre > 1 ? pre - 1 : pre));
+  };
 
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: {
-          ...presentation,
+  const handleToNext = () => {
+    setCurrentIndex((pre) => (pre < sliedeCount ? pre + 1 : pre));
+  };
+
+  useEffect(() => {
+    const keydown = (e) => {
+      if (e.key === "ArrowLeft") {
+        handleToPre();
+      } else if (e.key === "ArrowRight") {
+        handleToNext();
+      }
+    };
+    window.addEventListener("keydown", keydown);
+    return () => [window.removeEventListener("keydown", keydown)];
+  }, [currentIndex, sliedeCount]);
+
+  const createNewSlide = async () => {
+    try {
+      const data = await getStore();
+
+      const presentation = data.store[id];
+      const newSlideNumber =
+        Object.keys(presentation).filter((key) => !isNaN(key)).length + 1;
+
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: {
+            ...presentation,
+            [newSlideNumber]: {},
+          },
         },
-      },
-    };
+      };
+      await updateStore(updatedStore);
+      getPresentationDetail();
+      setCurrentIndex(newSlideNumber);
+    } catch (error) {
+      console.error("Failed to create new slide:", error);
+    }
+  };
 
-    await updateStore(updatedStore);
-    setPresentation(presentation); 
-  } catch (error) {
-    console.error("Failed to create new slide:", error);
-  }
-};
- const handleTextElementClick = (element, index) => {
-   console.log("Element clicked:", element, index); 
-   setEditingElement({ ...element, index });
- };
-const handleEditTextElsment = async (updatedData) => {
-     try {
-       const data = await getStore();
-       const presentation = data.store[id];
+  const handleDeleteSlide = async () => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
 
-       presentation[currentIndex].elements[editingElement.index] = updatedData;
+      const slides = Object.keys(presentation).filter((key) => !isNaN(key));
+      if (slides.length <= 1) {
+        alert("Cannot delete the last slide");
+        return;
+      }
 
-       const updatedStore = {
-         store: {
-           ...data.store,
-           [id]: presentation,
-         },
-       };
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: {
+            ...presentation,
+          },
+        },
+      };
+      delete updatedStore.store[id][currentIndex];
+      await updateStore(updatedStore);
+      setSlideCount((prev) => prev - 1);
+      if (currentIndex === slides.length) {
+        setCurrentIndex((prev) => prev - 1);
+      }
+      getPresentationDetail();
+    } catch (error) {}
+  };
+  const handleToAddText = async (textBoxData) => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
 
-       await updateStore(updatedStore);
-       setPresentation(presentation);
-       setEditingElement(null);
-     } catch (error) {
-       console.error("Failed to update element:", error);
-     }
-   };
+      if (!presentation[currentIndex]?.elements) {
+        presentation[currentIndex] = {
+          ...presentation[currentIndex],
+          elements: [],
+        };
+      }
+      presentation[currentIndex].elements.push(textBoxData);
 
-const handleDeleteTextElement = async (index) => {
-  try {
-    const data = await getStore();
-    const presentation = data.store[id];
-    presentation[currentIndex].elements = presentation[
-      currentIndex
-    ].elements.filter((_, i) => i !== index);
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: {
+            ...presentation,
+          },
+        },
+      };
 
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: presentation,
-      },
-    };
+      await updateStore(updatedStore);
+      setPresentation(presentation);
+    } catch (error) {
+      console.error("Failed to create new slide:", error);
+    }
+  };
+  const handleTextElementClick = (element, index) => {
+    console.log("Element clicked:", element, index);
+    setEditingElement({ ...element, index });
+  };
+  const handleEditTextElsment = async (updatedData) => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
 
-    await updateStore(updatedStore);
-    setPresentation(presentation);
-    setShowDeleteModal(false); 
-    setDeleteIndex(null);
-  } catch (error) {
-    console.error("Failed to delete element:", error);
-  }
-};
-const handleContextMenu = (e, index) => {
-  console.log("Right click triggered", index); 
-  e.preventDefault(); 
-  e.stopPropagation(); 
-  setDeleteIndex(index);
-  setShowDeleteModal(true);
-};
+      presentation[currentIndex].elements[editingElement.index] = updatedData;
 
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: presentation,
+        },
+      };
+
+      await updateStore(updatedStore);
+      setPresentation(presentation);
+      setEditingElement(null);
+    } catch (error) {
+      console.error("Failed to update element:", error);
+    }
+  };
+
+  const handleDeleteTextElement = async (index) => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
+      presentation[currentIndex].elements = presentation[
+        currentIndex
+      ].elements.filter((_, i) => i !== index);
+
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: presentation,
+        },
+      };
+
+      await updateStore(updatedStore);
+      setPresentation(presentation);
+      setShowDeleteModal(false);
+      setDeleteIndex(null);
+    } catch (error) {
+      console.error("Failed to delete element:", error);
+    }
+  };
+  const handleContextMenu = (e, index) => {
+    console.log("Right click triggered", index);
+    e.preventDefault();
+    e.stopPropagation();
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
+  };
 
   return (
     <>
@@ -254,6 +242,16 @@ const handleContextMenu = (e, index) => {
       <Typography variant="body1" component="div">
         {presentation.description}
       </Typography>
+      <Button variant="contained" onClick={createNewSlide}>
+        Create
+      </Button>
+      <Button
+        variant="contained"
+        onClick={handleDeleteSlide}
+        disabled={sliedeCount <= 1}
+      >
+        Delete Slide
+      </Button>
       <Box
         style={{
           width: "100%",
@@ -262,16 +260,6 @@ const handleContextMenu = (e, index) => {
           position: "relative",
         }}
       >
-        <Button variant="contained" onClick={createNewSlide}>
-          Create
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleDeleteSlide}
-          disabled={sliedeCount <= 1}
-        >
-          Delete Slide
-        </Button>
         {currentElements.map((element, index) => (
           <Box
             key={index}
@@ -283,11 +271,12 @@ const handleContextMenu = (e, index) => {
               position: "absolute",
               top: `${element.position?.y}%`,
               left: `${element.position?.x}%`,
+              width: `${element.size}%`,
+              weight: `${element.size}%`,
               color: element.color,
               fontSize: `${element.fontSize}em`,
               overflow: "hidden",
               border: "1px solid grey",
-              cursor: "pointer",
             }}
           >
             {element.text}
@@ -297,7 +286,8 @@ const handleContextMenu = (e, index) => {
       <Typography gutterBottom variant="h5" component="div">
         {currentIndex}
       </Typography>
-      <SlideModal presentationId={id} onSubmit={handleToAddText} />
+      <TextModal presentationId={id} onSubmit={handleToAddText} />
+      <ImageModal />
       <Box
         sx={{
           display: "flex",
@@ -359,7 +349,7 @@ const handleContextMenu = (e, index) => {
         initialData={presentation}
       />
       {editingElement && (
-        <SlideModal
+        <TextModal
           presentationId={id}
           onSubmit={handleEditTextElsment}
           initialData={editingElement}
