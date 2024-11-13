@@ -140,217 +140,10 @@ const PresentationDetail = () => {
       getPresentationDetail();
     } catch (error) {}
   };
-  const handleToAddText = async (textBoxData) => {
-    try {
-      const data = await getStore();
-      const presentation = data.store[id];
 
-      if (!presentation[currentIndex]?.elements) {
-        presentation[currentIndex] = {
-          ...presentation[currentIndex],
-          elements: [],
-        };
-      }
-      presentation[currentIndex].elements.push(textBoxData);
-
-      const updatedStore = {
-        store: {
-          ...data.store,
-          [id]: {
-            ...presentation,
-          },
-        },
-      };
-
-      await updateStore(updatedStore);
-      setPresentation(presentation);
-    } catch (error) {
-      console.error("Failed to create new slide:", error);
-    }
-  };
-  const handleTextElementClick = (element, index) => {
-   setEditingElement({ ...element, index });
-  }
-  const handleEditTextElsment = async (updatedData) => {
-    try {
-      const data = await getStore();
-      const presentation = data.store[id];
-
-      presentation[currentIndex].elements[editingElement.index] = updatedData;
-
-      const updatedStore = {
-        store: {
-          ...data.store,
-          [id]: presentation,
-        },
-      };
-
-      await updateStore(updatedStore);
-      setPresentation(presentation);
-      setEditingElement(null);
-    } catch (error) {
-      console.error("Failed to update element:", error);
-    }
-  };
-
-  const handleDeleteTextElement = async (index) => {
-    try {
-      const data = await getStore();
-      const presentation = data.store[id];
-      presentation[currentIndex].elements = presentation[
-        currentIndex
-      ].elements.filter((_, i) => i !== index);
-
-      const updatedStore = {
-        store: {
-          ...data.store,
-          [id]: presentation,
-        },
-      };
-
-      await updateStore(updatedStore);
-      setPresentation(presentation);
-      setShowDeleteModal(false);
-      setDeleteIndex(null);
-    } catch (error) {
-      console.error("Failed to delete element:", error);
-    }
-  };
-const handleContextMenu = (e, index, element) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  if (element.type === "text") {
-    setDeleteIndex(index);
-    setShowDeleteModal(true);
-  } else if (element.type === "image") {
-    setDeleteIndex(index);
-    setShowDeleteModal(true);
-  } else if (element.type === "video") {
-    setDeleteIndex(index);
-    setShowDeleteModal(true);
-  }
-};
-
-  const handleToAddImage = async (imageData) => {
-    try {
-      const data = await getStore();
-      const presentation = data.store[id];
-
-      if (!presentation[currentIndex]?.elements) {
-        presentation[currentIndex] = {
-          ...presentation[currentIndex],
-          elements: [],
-        };
-      }
-      presentation[currentIndex].elements.push({
-        ...imageData,
-        type: "image", 
-        position: imageData.position || { x: 0, y: 0 }, 
-      });
-
-      const updatedStore = {
-        store: {
-          ...data.store,
-          [id]: {
-            ...presentation,
-          },
-        },
-      };
-
-      await updateStore(updatedStore);
-      setPresentation(presentation);
-    } catch (error) {
-      console.error("Failed to add image:", error);
-    }
-  };
-
-const handleEditImage = async (updatedData) => {
-  try {
-    const data = await getStore(); 
-    const presentation = data.store[id]; 
-
-    presentation[currentIndex].elements[editingElement.index] = {
-      ...presentation[currentIndex].elements[editingElement.index], 
-      ...updatedData, 
-    };
-
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: presentation,
-      },
-    };
-
-    await updateStore(updatedStore); 
-    setPresentation(presentation); 
-    setEditingElement(null); 
-  } catch (error) {
-    console.error("Failed to update image element:", error); 
-  }
-};
-const handleDeleteImage = async (index) => {
-  try {
-    const data = await getStore(); 
-    const presentation = data.store[id]; 
-
-    presentation[currentIndex].elements = presentation[
-      currentIndex
-    ].elements.filter((_, i) => i !== index);
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: presentation,
-      },
-    };
-
-    await updateStore(updatedStore); 
-    setPresentation(presentation); 
-    setShowDeleteModal(false); 
-    setDeleteIndex(null); 
-  } catch (error) {
-    console.error("Failed to delete image element:", error); 
-  }
-};
-const handleToAddVideo = async (videoData) => {
-  try {
-    const data = await getStore(); 
-    const presentation = data.store[id]; 
-
-    if (!presentation[currentIndex]?.elements) {
-      presentation[currentIndex] = {
-        ...presentation[currentIndex],
-        elements: [],
-      };
-    }
-
-    presentation[currentIndex].elements.push({
-      ...videoData,
-      type: "video", 
-      position: videoData.position || { x: 0, y: 0 }, 
-    });
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: {
-          ...presentation,
-        },
-      },
-    };
-
-    await updateStore(updatedStore); 
-    setPresentation(presentation); 
-  } catch (error) {
-    console.error("Failed to add video:", error); 
-  }
-};
-const handleEditVideo = async (updatedData) => {
+const handleEditElement = async (updatedData) => {
   try {
     const data = await getStore();
-
     const presentation = data.store[id];
 
     presentation[currentIndex].elements[editingElement.index] = {
@@ -366,15 +159,90 @@ const handleEditVideo = async (updatedData) => {
     };
 
     await updateStore(updatedStore);
-
     setPresentation(presentation);
     setEditingElement(null);
+    setShowEditModal(false);
   } catch (error) {
-    console.error("Failed to update video element:", error);
+    console.error("Failed to update element:", error);
+  }
+};
+const handleAddElement = async (elementData) => {
+  try {
+    const data = await getStore();
+    const presentation = data.store[id];
+
+    if (!presentation[currentIndex]?.elements) {
+      presentation[currentIndex] = {
+        ...presentation[currentIndex],
+        elements: [],
+      };
+    }
+
+    presentation[currentIndex].elements.push(elementData);
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: {
+          ...presentation,
+        },
+      },
+    };
+
+    await updateStore(updatedStore);
+    setPresentation(presentation);
+  } catch (error) {
+    console.error("Failed to add element:", error);
   }
 };
 
+const handleDeleteElement = async (index) => {
+  try {
+    const data = await getStore();
+    const presentation = data.store[id];
 
+    presentation[currentIndex].elements = presentation[
+      currentIndex
+    ].elements.filter((_, i) => i !== index);
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: presentation,
+      },
+    };
+
+    await updateStore(updatedStore);
+    setPresentation(presentation);
+    setShowDeleteModal(false);
+    setDeleteIndex(null);
+  } catch (error) {
+    console.error("Failed to delete element:", error);
+  }
+};
+  
+ const handleElementClick = (element, index) => {
+   setEditingElement({ ...element, index });
+   if (element.type !== "text") {
+     setShowEditModal(true);
+   }
+ };
+ 
+const handleContextMenu = (e, index, element) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (element.type === "text") {
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
+  } else if (element.type === "image") {
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
+  } else if (element.type === "video") {
+    setDeleteIndex(index);
+    setShowDeleteModal(true);
+  }
+};
 
   return (
     <>
@@ -415,7 +283,7 @@ const handleEditVideo = async (updatedData) => {
         {currentElements.map((element, index) => (
           <Box
             key={index}
-            onClick={() => handleTextElementClick(element, index)}
+            onClick={() => handleElementClick(element, index)}
             onContextMenu={(e) => handleContextMenu(e, index)}
             style={{
               position: "absolute",
@@ -470,9 +338,9 @@ const handleEditVideo = async (updatedData) => {
       <Typography gutterBottom variant="h5" component="div">
         {currentIndex}
       </Typography>
-      <TextModal presentationId={id} onSubmit={handleToAddText} />
-      <ImageModal presentationId={id} onSubmit={handleToAddImage} />
-      <VideoModal presentationId={id} onSubmit={handleToAddVideo} />
+      <TextModal presentationId={id} onSubmit={handleAddElement} />
+      <ImageModal presentationId={id} onSubmit={handleAddElement} />
+      <VideoModal presentationId={id} onSubmit={handleAddElement} />
       <Box
         sx={{
           display: "flex",
@@ -513,12 +381,7 @@ const handleEditVideo = async (updatedData) => {
         }}
         onConfirm={() => {
           if (deleteIndex !== null) {
-            const element = currentElements[deleteIndex];
-            if (element?.type === "text") {
-              handleDeleteTextElement(deleteIndex);
-            } else if (element?.type === "image") {
-              handleDeleteImage(deleteIndex);
-            }
+            handleDeleteElement(deleteIndex);
           } else {
             handleDeletePresentation();
           }
@@ -531,20 +394,22 @@ const handleEditVideo = async (updatedData) => {
         }
       />
 
-      <PresentationModal
-        open={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        onSuccess={() => {
-          getPresentationDetail();
-          setShowEditModal(false);
-        }}
-        mode="edit"
-        initialData={presentation}
-      />
+      {showEditModal && ( 
+        <PresentationModal
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            getPresentationDetail();
+            setShowEditModal(false);
+          }}
+          mode="edit"
+          initialData={presentation}
+        />
+      )}
       {editingElement?.type === "text" && (
         <TextModal
           presentationId={id}
-          onSubmit={handleEditTextElsment}
+          onSubmit={handleEditElement}
           initialData={editingElement}
           onClose={() => setEditingElement(null)}
         />
@@ -552,7 +417,7 @@ const handleEditVideo = async (updatedData) => {
       {editingElement?.type === "image" && (
         <ImageModal
           presentationId={id}
-          onSubmit={handleEditImage}
+          onSubmit={handleEditElement}
           initialData={editingElement}
           onClose={() => setEditingElement(null)}
         />
@@ -560,7 +425,7 @@ const handleEditVideo = async (updatedData) => {
       {editingElement?.type === "video" && (
         <VideoModal
           presentationId={id}
-          onSubmit={handleEditVideo}
+          onSubmit={handleEditElement}
           initialData={editingElement}
           onClose={() => setEditingElement(null)}
         />
