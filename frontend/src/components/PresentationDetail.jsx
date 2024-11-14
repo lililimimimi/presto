@@ -11,11 +11,15 @@ import VideoModal from "./VideoModal";
 import CodeModal from "./CodeModal";
 import BackgroundModal from "./BackgroundModal";
 import ThumbnailModal from "./ThumbnailModal ";
-import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material"; 
+import { Box, FormControl, InputLabel, Select, MenuItem,Paper,
+  Stack } from "@mui/material"; 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
 import ColorizeIcon from "@mui/icons-material/Colorize";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
+import ImageIcon from "@mui/icons-material/Image";
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
@@ -280,31 +284,32 @@ if (selectedElement?.index === index && timeDiff < 300) {
 }
 };
 const handleFontChange = async (event) => {
-  if (selectedTextBox === null) return; 
+  const newFont = event.target.value;
+  setCurrentFont(newFont);
 
-  try {
-    const newFont = event.target.value;
-    setCurrentFont(newFont);
+  if (selectedElement) {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
+      if (presentation[currentIndex]?.elements?.[selectedElement.index]) {
+        presentation[currentIndex].elements[selectedElement.index] = {
+          ...presentation[currentIndex].elements[selectedElement.index],
+          fontFamily: newFont,
+        };
 
-    const data = await getStore();
-    const presentation = data.store[id];
+        const updatedStore = {
+          store: {
+            ...data.store,
+            [id]: presentation,
+          },
+        };
 
-    presentation[currentIndex].elements[selectedTextBox] = {
-      ...presentation[currentIndex].elements[selectedTextBox],
-      fontFamily: newFont,
-    };
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: presentation,
-      },
-    };
-
-    await updateStore(updatedStore);
-    setPresentation(presentation);
-  } catch (error) {
-    console.error("Failed to update font:", error);
+        await updateStore(updatedStore);
+        setPresentation(presentation);
+      }
+    } catch (error) {
+      console.error("Failed to update font:", error);
+    }
   }
 };
 const handleBackgroundSubmit = async (backgroundData) => {
@@ -381,43 +386,56 @@ const handleThumbnailUpdate = async (thumbnailData) => {
 };
 
   return (
-    <>
-      <Button variant="contained" onClick={() => navigate("/dashboard")}>
-        Back
-      </Button>
-      <Button variant="contained" onClick={handleDeleteClickModal}>
-        Delete Pre
-      </Button>
-      <Button variant="contained" onClick={() => setShowEditModal(true)}>
-        Edit
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => setEditingThumbnail(presentation)}
+    <Box>
+      {/* Basic Operations Bar */}
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        sx={{ mb: 2, p: 1 }}
       >
-        Thmbnail
-      </Button>
-      <Typography gutterBottom variant="h5" component="div">
-        Title: {presentation?.Title || "Loading..."}
-      </Typography>
-      <Typography variant="body1" component="div">
-        {presentation.description}
-      </Typography>
-      <Button onClick={createNewSlide}>
-        <AddIcon />
-      </Button>
-      <Button
-        onClick={handleDeleteSlide}
-        disabled={sliedeCount <= 1}
-      >
-        <DeleteIcon />
-      </Button>
-      <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
-        <FormControl sx={{ minWidth: 200 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/dashboard")}
+          size="small"
+          sx={{ color: "#3479E8" }}
+        >
+          BACK
+        </Button>
+        <Button
+          startIcon={<DeleteIcon />}
+          onClick={handleDeleteClickModal}
+          size="small"
+          sx={{ color: "#3479E8" }}
+        >
+          DELETE
+        </Button>
+        <Button
+          startIcon={<EditIcon />}
+          onClick={() => setShowEditModal(true)}
+          size="small"
+          sx={{ color: "#3479E8" }}
+        >
+          EDIT
+        </Button>
+        <Button
+          startIcon={<ImageIcon />}
+          onClick={() => setEditingThumbnail(presentation)}
+          size="small"
+          sx={{ color: "#3479E8" }}
+        >
+          THUMBNAIL
+        </Button>
+        <FormControl size="small" sx={{ minWidth: 150, zIndex: 2 }}>
           <InputLabel>Font Family</InputLabel>
           <Select
             value={currentFont}
-            onChange={handleFontChange}
+            onChange={(e) => {
+              setCurrentFont(e.target.value);
+              if (selectedElement) {
+                handleFontChange(e); 
+              }
+            }}
             label="Font Family"
           >
             {fontFamilies.map((font) => (
@@ -431,13 +449,52 @@ const handleThumbnailUpdate = async (thumbnailData) => {
             ))}
           </Select>
         </FormControl>
-      </Box>
-      <Button onClick={() => setShowBgModal(true)}>
-        <ColorizeIcon />
-      </Button>
-      <Button onClick={handlePreview}><PreviewIcon /></Button>
+      </Stack>
+
+      {/* Title and Description */}
+      <Typography gutterBottom variant="h5" component="div">
+        Title: {presentation?.Title || "Loading..."}
+      </Typography>
+      <Typography
+        variant="body2"
+        component="div"
+        sx={{ mb: 2, color: "text.secondary" }}
+      >
+        {presentation.description}
+      </Typography>
+
+      {/* Edit tool */}
+      <Paper sx={{ p: 1 }}>
+        <Stack direction="row" alignItems="center">
+          <Button size="small" onClick={createNewSlide}>
+            <AddIcon />
+          </Button>
+          <Button
+            size="small"
+            onClick={handleDeleteSlide}
+            disabled={sliedeCount <= 1}
+          >
+            <DeleteIcon />
+          </Button>
+
+          <TextModal presentationId={id} onSubmit={handleAddElement} />
+          <ImageModal presentationId={id} onSubmit={handleAddElement} />
+          <VideoModal presentationId={id} onSubmit={handleAddElement} />
+          <CodeModal presentationId={id} onSubmit={handleAddElement} />
+
+          <Button size="small" onClick={() => setShowBgModal(true)}>
+            <ColorizeIcon />
+          </Button>
+
+          <Button size="small" onClick={handlePreview}>
+            <PreviewIcon />
+          </Button>
+        </Stack>
+      </Paper>
+
+      {/* Edit area*/}
       <Box
-        style={{
+        sx={{
           width: "100%",
           height: "500px",
           border: "1px solid black",
@@ -452,7 +509,7 @@ const handleThumbnailUpdate = async (thumbnailData) => {
           <Box
             key={index}
             onMouseDown={(e) => handleElementClick(element, index)}
-            style={{
+            sx={{
               position: "absolute",
               top: `${element.position?.y || 0}%`,
               left: `${element.position?.x || 0}%`,
@@ -462,7 +519,7 @@ const handleThumbnailUpdate = async (thumbnailData) => {
               border: `1px solid ${
                 selectedElement?.index === index ? "#1976d2" : "grey"
               }`,
-              backgroundColor:
+              bgcolor:
                 selectedElement?.index === index
                   ? "rgba(25, 118, 210, 0.1)"
                   : "transparent",
@@ -472,7 +529,7 @@ const handleThumbnailUpdate = async (thumbnailData) => {
             {element.type === "text" && (
               <Box position="relative">
                 <Typography
-                  style={{
+                  sx={{
                     fontSize: `${element.fontSize || 1}em`,
                     color: element.color || "#000000",
                     fontFamily: element.fontFamily || currentFont,
@@ -484,10 +541,11 @@ const handleThumbnailUpdate = async (thumbnailData) => {
               </Box>
             )}
             {element.type === "image" && (
-              <img
+              <Box
+                component="img"
                 src={element.url}
                 alt={element.altText || "image"}
-                style={{
+                sx={{
                   width: "100%",
                   height: "100%",
                   objectFit: "contain",
@@ -495,11 +553,12 @@ const handleThumbnailUpdate = async (thumbnailData) => {
               />
             )}
             {element.type === "video" && (
-              <iframe
+              <Box
+                component="iframe"
                 src={`${element.url}${
                   element.url.includes("?") ? "&" : "?"
                 }autoplay=${element.autoplay ? 1 : 0}`}
-                style={{
+                sx={{
                   width: "100%",
                   height: "100%",
                   border: "none",
@@ -510,18 +569,19 @@ const handleThumbnailUpdate = async (thumbnailData) => {
               />
             )}
             {element.type === "code" && (
-              <pre
-                style={{
-                  margin: 0,
-                  padding: "1em",
+              <Box
+                component="pre"
+                sx={{
+                  m: 0,
+                  p: 1,
                   fontSize: element.fontSize || "1em",
                   fontFamily: "monospace",
                   width: "100%",
                   height: "100%",
                   overflow: "auto",
-                  backgroundColor: "#f5f5f5",
+                  bgcolor: "#f5f5f5",
                   border: "1px solid #ddd",
-                  borderRadius: "4px",
+                  borderRadius: 1,
                 }}
               >
                 <code
@@ -530,49 +590,59 @@ const handleThumbnailUpdate = async (thumbnailData) => {
                   }}
                   className={`language-${element.language}`}
                 />
-              </pre>
+              </Box>
             )}
           </Box>
         ))}
       </Box>
-      <Typography gutterBottom variant="h5" component="div">
-        {currentIndex}
-      </Typography>
-      <TextModal presentationId={id} onSubmit={handleAddElement} />
-      <ImageModal presentationId={id} onSubmit={handleAddElement} />
-      <VideoModal presentationId={id} onSubmit={handleAddElement} />
-      <CodeModal presentationId={id} onSubmit={handleAddElement} />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 2,
-          mt: 2,
-        }}
-      >
-        <Button
-          variant="contained"
-          onClick={handlePrevious}
-          disabled={currentIndex === 1}
+
+      {/* Slide count and naviagte */}
+      <Box sx={{ mt: 2, mb: 2 }}>
+        <Typography
+          gutterBottom
+          variant="body2"
+          component="div"
+          align="left"
           sx={{
-            minWidth: "120px",
-            height: "40px",
+            mb: 2,
+            color: "text.secondary",
           }}
         >
-          Previous
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleToNext}
-          disabled={currentIndex === sliedeCount}
+          Slide {currentIndex} of {sliedeCount}
+        </Typography>
+        <Box
           sx={{
-            minWidth: "120px",
-            height: "40px",
+            display: "flex",
+            justifyContent: "center",
+            gap: 2,
           }}
         >
-          Next
-        </Button>
+          <Button
+            variant="contained"
+            onClick={handlePrevious}
+            disabled={currentIndex === 1}
+            sx={{
+              minWidth: "120px",
+              height: "40px",
+            }}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleToNext}
+            disabled={currentIndex === sliedeCount}
+            sx={{
+              minWidth: "120px",
+              height: "40px",
+            }}
+          >
+            Next
+          </Button>
+        </Box>
       </Box>
+
+      {/* Modal Component */}
       <ErrorModal
         open={showDeleteModal}
         onClose={() => {
@@ -653,7 +723,7 @@ const handleThumbnailUpdate = async (thumbnailData) => {
           onClose={() => setEditingElement(null)}
         />
       )}
-    </>
+    </Box>
   );
 };
 
