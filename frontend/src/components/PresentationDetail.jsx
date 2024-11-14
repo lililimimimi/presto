@@ -29,9 +29,9 @@ import EditIcon from "@mui/icons-material/Edit";
 const PresentationDetail = () => {
   const navigate = useNavigate();
   const [presentation, setPresentation] = useState({});
-  const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
@@ -58,10 +58,7 @@ const PresentationDetail = () => {
       setCurrentIndex(parseInt(slideNumber, 10));
     }
   }, [location.search]);
-  // Opens the delete confirmation modal when the delete button is clicked.
-  const handleDeleteClickModal = () => {
-    setShowDeleteModal(true);
-  };
+
   // Fetches presentation details and updates state.
   const getPresentationDetail = async () => {
     setLoading(true);
@@ -102,7 +99,6 @@ const PresentationDetail = () => {
       setShowDeleteModal(false);
       navigate("/dashboard");
     } catch (error) {
-      setError("Failed to delete presentation");
     }
   };
   // Navigates to the previous slide
@@ -166,24 +162,34 @@ const PresentationDetail = () => {
 
       const slides = Object.keys(presentation).filter((key) => !isNaN(key));
       if (slides.length <= 1) {
-        alert("Cannot delete the last slide");
+         setShowDeleteModal(true);
         return;
+      }
+      let updatedPresentation = { ...presentation };
+      delete updatedPresentation[currentIndex];
+
+      for (let i = currentIndex + 1; i <= slides.length; i++) {
+        if (updatedPresentation[i]) {
+          updatedPresentation[i - 1] = updatedPresentation[i];
+          delete updatedPresentation[i];
+        }
       }
 
       const updatedStore = {
-        store: {
-          ...data.store,
-          [id]: {
-            ...presentation,
-          },
-        },
-      };
-      delete updatedStore.store[id][currentIndex]; // Remove current slide
-      await updateStore(updatedStore);
-      setSlideCount((prev) => prev - 1); // Update slide count
-      if (currentIndex === slides.length) {
-        setCurrentIndex((prev) => prev - 1);
+       store: {
+        ...data.store,
+        [id]: updatedPresentation
       }
+        
+      };
+      await updateStore(updatedStore);
+
+      if (currentIndex === slides.length) {
+        setCurrentIndex(currentIndex - 1);
+        navigate(`?slide=${currentIndex - 1}`, { replace: true });
+      }
+
+      setSlideCount((prev) => prev - 1);
       getPresentationDetail();
     } catch (error) {}
   };
@@ -266,6 +272,8 @@ const PresentationDetail = () => {
       setDeleteIndex(null);
     } catch (error) {
       console.error("Failed to delete element:", error);
+       setShowDeleteModal(false);
+       setDeleteIndex(null);
     }
   };
   // Opens the delete modal on right-click
@@ -406,7 +414,7 @@ const PresentationDetail = () => {
           </Button>
           <Button
             startIcon={<DeleteIcon />}
-            onClick={handleDeleteClickModal}
+            onClick={() => setShowDeleteModal(true)}
             size="small"
             sx={{ color: "#3479E8" }}
           >
@@ -647,15 +655,12 @@ const PresentationDetail = () => {
         open={showDeleteModal}
         onClose={() => {
           setShowDeleteModal(false);
-          setDeleteIndex(null);
         }}
         onConfirm={() => {
           if (deleteIndex !== null) {
             handleDeleteElement(deleteIndex);
-          } else if (sliedeCount <= 1) {
-            handleDeletePresentation();
           } else {
-            handleDeleteSlide();
+            handleDeletePresentation();
           }
         }}
         title="Delete"
