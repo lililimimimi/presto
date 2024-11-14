@@ -10,7 +10,6 @@ import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
 import CodeModal from "./CodeModal";
 import BackgroundModal from "./BackgroundModal";
-import ThumbnailModal from "./ThumbnailModal ";
 import { Box, FormControl, InputLabel, Select, MenuItem,Paper,
   Stack } from "@mui/material"; 
 import AddIcon from "@mui/icons-material/Add";
@@ -19,7 +18,6 @@ import PreviewIcon from "@mui/icons-material/Preview";
 import ColorizeIcon from "@mui/icons-material/Colorize";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
-import ImageIcon from "@mui/icons-material/Image";
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
@@ -27,7 +25,6 @@ const PresentationDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingThumbnail, setEditingThumbnail] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
@@ -373,27 +370,6 @@ const PresentationDetail = () => {
     navigate(`/presentation/${id}/preview?slide=${currentIndex}`); // Navigate to the preview page
   };
 
-  const handleThumbnailUpdate = async (thumbnailData) => {
-    try {
-      const data = await getStore();
-      const presentationData = data.store[id];
-
-      const updatedStore = {
-        store: {
-          ...data.store,
-          [id]: {
-            ...presentationData,
-            thumbnailUrl: thumbnailData.thumbnailUrl, // Update thumbnail URL
-          },
-        },
-      };
-
-      await updateStore(updatedStore);
-      getPresentationDetail();
-    } catch (error) {
-      console.error("Failed to update thumbnail:", error);
-    }
-  };
 
   return (
     <Box>
@@ -427,14 +403,6 @@ const PresentationDetail = () => {
           sx={{ color: "#3479E8" }}
         >
           EDIT
-        </Button>
-        <Button
-          startIcon={<ImageIcon />}
-          onClick={() => setEditingThumbnail(presentation)}
-          size="small"
-          sx={{ color: "#3479E8" }}
-        >
-          THUMBNAIL
         </Button>
         <FormControl size="small" sx={{ minWidth: 150, zIndex: 2 }}>
           <InputLabel>Font Family</InputLabel>
@@ -682,13 +650,6 @@ const PresentationDetail = () => {
           presentation?.defaultBackground
         }
       />
-      {editingThumbnail && (
-        <ThumbnailModal
-          onSubmit={handleThumbnailUpdate}
-          initialData={editingThumbnail}
-          onClose={() => setEditingThumbnail(null)}
-        />
-      )}
       {showEditModal && (
         <PresentationModal
           open={showEditModal}
