@@ -9,22 +9,24 @@ const Dashboard = () => {
   const [presentation, setPresentation] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Fetch presentations from the store
   const getPresentations = async () => {
     try {
       const data = await getStore();
       if (data && data.store) {
-              const presentationArray = Object.entries(data.store).map(
-                ([id, presentation]) => {
-                  const slideCount = Object.keys(presentation).filter(
-                    (key) => !isNaN(key)
-                  ).length;
-                  return {
-                    id,
-                    ...presentation,
-                    slideCount,
-                  };
-                }
-              );
+        // Transform data to include slide counts
+        const presentationArray = Object.entries(data.store).map(
+          ([id, presentation]) => {
+            const slideCount = Object.keys(presentation).filter(
+              (key) => !isNaN(key)
+            ).length;
+            return {
+              id,
+              ...presentation,
+              slideCount,
+            };
+          }
+        );
         setPresentation(presentationArray);
       }
     } catch (error) {
@@ -35,7 +37,7 @@ const Dashboard = () => {
   useEffect(() => {
     getPresentations();
   }, []);
-
+  // Refresh the presentation list
   const refreshPresentations = () => {
     getPresentations();
   };

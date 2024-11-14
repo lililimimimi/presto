@@ -30,11 +30,13 @@ const style = {
   p: 4,
 };
 
+// Function to detect programming language based on code
 const detectLanguage = (code) => {
   if (!code) return "python";
 
   const lowerCode = code.toLowerCase();
 
+  // Check for Python keywords
   if (
     lowerCode.includes("def ") ||
     lowerCode.includes("import ") ||
@@ -43,6 +45,7 @@ const detectLanguage = (code) => {
     return "python";
   }
 
+  // Check for JavaScript keywords
   if (
     lowerCode.includes("console.log") ||
     lowerCode.includes("function") ||
@@ -51,7 +54,7 @@ const detectLanguage = (code) => {
   ) {
     return "javascript";
   }
-
+  // Check for C language keywords
   if (lowerCode.includes("#include") || lowerCode.includes("int main")) {
     return "c";
   }
@@ -68,15 +71,16 @@ const CodeModal = ({ onSubmit, initialData = null, onClose }) => {
 
   const handleClose = () => {
     setOpen(false);
-     if (!initialData) {
-       setSize("30"); 
-       setCode(""); 
-       setFontSize("1"); 
-       setLanguage("python"); 
-     }
+    if (!initialData) {
+      setSize("30");
+      setCode("");
+      setFontSize("1");
+      setLanguage("python");
+    }
     if (onClose) onClose();
   };
-
+  
+  // Handle code content changes and detect language automatically
   const handleCodeChange = (e) => {
     const newCode = e.target.value;
     setCode(newCode);
@@ -114,7 +118,9 @@ const CodeModal = ({ onSubmit, initialData = null, onClose }) => {
   return (
     <Box>
       {!initialData && (
-        <Button onClick={() => setOpen(true)}><CodeIcon /></Button>
+        <Button onClick={() => setOpen(true)}>
+          <CodeIcon />
+        </Button>
       )}
       <Modal open={initialData ? true : open} onClose={handleClose}>
         <Box sx={style}>

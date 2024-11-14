@@ -30,28 +30,29 @@ const ThumbnailModal = ({
   const handleClose = () => {
     setOpen(false);
     setThumbnailFile(null);
-    setPreviewUrl(initialData?.thumbnailUrl || "");
+    setPreviewUrl(initialData?.thumbnailUrl || ""); // Reset preview to initial data if editing
     if (onClose) {
       onClose();
     }
   };
 
+  // Handle file input change
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setThumbnailFile(file);
-      const localUrl = URL.createObjectURL(file);
+      const localUrl = URL.createObjectURL(file); // Generate a local preview URL
       setPreviewUrl(localUrl);
     }
   };
 
   const handleSubmit = () => {
     if (thumbnailFile) {
-      const reader = new FileReader();
+      const reader = new FileReader(); // Create a FileReader to read the file as data URL
       reader.onloadend = () => {
         const thumbnailData = {
           type: "thumbnail",
-          thumbnailUrl: reader.result,
+          thumbnailUrl: reader.result, // Base64 URL of the image
         };
         onSubmit(thumbnailData);
         handleClose();
@@ -62,7 +63,10 @@ const ThumbnailModal = ({
 
   return (
     <Box>
+      {/* Button to open modal if creating a new thumbnail */}
       {!initialData && <Button onClick={handleOpen}>Edit Thumbnail</Button>}
+
+      {/* Modal for editing or adding a thumbnail */}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}
@@ -79,6 +83,7 @@ const ThumbnailModal = ({
               margin="normal"
               InputLabelProps={{ shrink: true }}
             />
+            {/* Display thumbnail preview if a file is selected */}
             {previewUrl && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <img
@@ -93,6 +98,7 @@ const ThumbnailModal = ({
               </Box>
             )}
           </Box>
+          {/* Action buttons */}
           <Box
             sx={{
               display: "flex",

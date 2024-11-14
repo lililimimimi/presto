@@ -56,11 +56,13 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
 
   return (
     <Box>
+      {/* Button to open modal for creating new video */}
       {!initialData && (
         <Button onClick={() => setOpen(true)}>
           <OndemandVideoIcon />
         </Button>
       )}
+      {/* Modal for adding or editing a video */}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}
@@ -68,6 +70,7 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+          {/* Input fields for video properties */}
           <TextField
             id="size"
             label="Video Size"
@@ -97,6 +100,7 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
             }
             label="Autoplay"
           />
+          {/* Action buttons */}
           <Box
             sx={{
               display: "flex",

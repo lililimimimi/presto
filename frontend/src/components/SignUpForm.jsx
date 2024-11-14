@@ -10,6 +10,7 @@ const SignUpForm = ({ setToken }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
+  // Handle user registration
   const handleRegister = async () => {
     try {
       if (!email) {
@@ -36,12 +37,14 @@ const SignUpForm = ({ setToken }) => {
       window.alert(`Registration failed: ${error.message}`);
     }
   };
-    const handleCancel = () => {
-      setEmail("");
-      setPassword("");
-      setName("");
-      setConfirmPassword("");
-    };
+  
+  // Handle cancel button logic
+  const handleCancel = () => {
+    setEmail("");
+    setPassword("");
+    setName("");
+    setConfirmPassword("");
+  };
 
   return (
     <Container

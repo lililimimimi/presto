@@ -154,6 +154,7 @@ const PresentationDetail = () => {
       console.error("Failed to create new slide:", error);
     }
   };
+  // Deletes the current slide
   const handleDeleteSlide = async () => {
     try {
       const data = await getStore();
@@ -182,6 +183,7 @@ const PresentationDetail = () => {
       getPresentationDetail();
     } catch (error) {}
   };
+  // Updates a specific element
   const handleEditElement = async (updatedData) => {
     try {
       const data = await getStore();
@@ -206,6 +208,7 @@ const PresentationDetail = () => {
       console.error("Failed to update element:", error);
     }
   };
+  // Adds a new element to the current slide.
   const handleAddElement = async (elementData) => {
     try {
       const data = await getStore();
@@ -235,6 +238,7 @@ const PresentationDetail = () => {
       console.error("Failed to add element:", error);
     }
   };
+  // Deletes an element from the current slide.
   const handleDeleteElement = async (index) => {
     try {
       const data = await getStore();
@@ -260,6 +264,7 @@ const PresentationDetail = () => {
       console.error("Failed to delete element:", error);
     }
   };
+  // Opens the delete modal on right-click
   useEffect(() => {
     const handleContextMenu = (e) => {
       if (selectedElement) {
@@ -273,7 +278,7 @@ const PresentationDetail = () => {
       window.removeEventListener("contextmenu", handleContextMenu);
     };
   }, [selectedElement]);
-
+  // Handles element selection and double-click for editing.
   const handleElementClick = (element, index) => {
     const currentTime = new Date().getTime();
     const timeDiff = currentTime - lastClickTime;
@@ -284,7 +289,7 @@ const PresentationDetail = () => {
       setLastClickTime(currentTime); // Update last click time
     }
   };
-
+  // Updates the font of the selected element and saves it.
   const handleFontChange = async (event) => {
     const newFont = event.target.value;
     setCurrentFont(newFont);
@@ -314,7 +319,7 @@ const PresentationDetail = () => {
       }
     }
   };
-
+  // Sets the background for the slide
   const handleBackgroundSubmit = async (backgroundData) => {
     try {
       const data = await getStore();
@@ -326,7 +331,7 @@ const PresentationDetail = () => {
         if (!presentation[currentIndex]) {
           presentation[currentIndex] = {};
         }
-        presentation[currentIndex].background = backgroundData; 
+        presentation[currentIndex].background = backgroundData; // Update current slide background
       }
 
       const updatedStore = {
@@ -342,17 +347,17 @@ const PresentationDetail = () => {
       console.error("Failed to update background:", error);
     }
   };
-
+  // Returns the CSS style based on the background type.
   const getBackgroundStyle = (background) => {
     if (!background) return {};
 
     switch (background.type) {
       case "solid":
-        return { backgroundColor: background.color }; 
+        return { backgroundColor: background.color }; // Solid color background
       case "gradient":
         return {
           background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
-        }; 
+        }; // Gradient background
       case "image":
         return {
           backgroundImage: `url(${background.imageUrl})`,
@@ -363,10 +368,11 @@ const PresentationDetail = () => {
         return {};
     }
   };
-
+  // Opens the preview for the current slide.
   const handlePreview = () => {
     navigate(`/presentation/${id}/preview?slide=${currentIndex}`); // Navigate to the preview page
   };
+
   const handleThumbnailUpdate = async (thumbnailData) => {
     try {
       const data = await getStore();
@@ -377,7 +383,7 @@ const PresentationDetail = () => {
           ...data.store,
           [id]: {
             ...presentationData,
-            thumbnailUrl: thumbnailData.thumbnailUrl, 
+            thumbnailUrl: thumbnailData.thumbnailUrl, // Update thumbnail URL
           },
         },
       };

@@ -18,10 +18,9 @@ const style = {
 };
 
 const TextModal = ({
-  onSubmit,
-  presentationId,
-  initialData = null,
-  onClose,
+  onSubmit, // Callback function to handle form submission
+  initialData = null, // Initial data for editing mode
+  onClose, // Callback to handle modal close
 }) => {
   const [open, setOpen] = useState(Boolean(initialData));
   const handleOpen = () => setOpen(true);
@@ -32,6 +31,7 @@ const TextModal = ({
 
   const handleClose = () => {
     setOpen(false);
+    // Reset form inputs if creating a new text box
     if (!initialData) {
       setSize("");
       setText("");

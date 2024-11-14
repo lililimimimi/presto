@@ -10,7 +10,9 @@ import Box from "@mui/material/Box";
 const MediaCard = ({ id, title, description, slideCount, thumbnailUrl }) => {
   const navigate = useNavigate();
 
+  // Navigate to the  presentation detail page
   const goToSinglePresentation = (id) => {
+    // Dynamic route to the presentation page
     navigate(`/presentation/${id}`);
   };
 

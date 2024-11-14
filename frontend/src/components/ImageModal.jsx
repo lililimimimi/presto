@@ -29,22 +29,22 @@ const ImageModal = ({
   const [imageAltText, setImageAltText] = useState(
     initialData?.imageAltText || ""
   );
-    const [imageData, setImageData] = useState(initialData?.url || "");
-    const fileInputRef = useRef(null);
+  const [imageData, setImageData] = useState(initialData?.url || "");
+  const fileInputRef = useRef(null);
 
   const handleClose = () => {
     setOpen(false);
     if (!initialData) {
       setImageSize("");
       setImageAltText("");
-      setImageData(""); 
+      setImageData("");
     }
     if (onClose) {
       onClose();
     }
   };
 
-
+  // Handle file selection and read image data
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -55,22 +55,23 @@ const ImageModal = ({
       reader.readAsDataURL(file);
     }
   };
-
-    const extractImageUrl = (googleUrl) => {
-      try {
-        const url = new URL(googleUrl);
-        if (url.hostname === "www.google.com" && url.pathname === "/imgres") {
-          const imgUrl = url.searchParams.get("imgurl");
-          if (imgUrl) {
-            return decodeURIComponent(imgUrl);
-          }
+  // Extract image URL from Google search link if applicable
+  const extractImageUrl = (googleUrl) => {
+    try {
+      const url = new URL(googleUrl);
+      if (url.hostname === "www.google.com" && url.pathname === "/imgres") {
+        const imgUrl = url.searchParams.get("imgurl");
+        if (imgUrl) {
+          return decodeURIComponent(imgUrl);
         }
-        return googleUrl;
-      } catch (e) {
-        return googleUrl;
       }
-    };
+      return googleUrl;
+    } catch (e) {
+      return googleUrl;
+    }
+  };
 
+  // Handle URL input and extract direct image URL if necessary
   const handleUrlChange = (e) => {
     const inputUrl = e.target.value;
     const imageUrl = extractImageUrl(inputUrl);
@@ -92,7 +93,7 @@ const ImageModal = ({
     if (!initialData) {
       setImageSize("");
       setImageAltText("");
-      setImageData(""); 
+      setImageData("");
     }
   };
 

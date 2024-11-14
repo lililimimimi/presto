@@ -8,6 +8,7 @@ const SignInForm = ({ setToken }) => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // Handle login logic
   const handleLogin = async () => {
     try {
       if (!email || !password) {
@@ -16,16 +17,17 @@ const SignInForm = ({ setToken }) => {
       }
       const data = await login(email, password);
       setToken(data.token);
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.token); // Save token to localStorage
       navigate("/dashboard");
     } catch (error) {
       window.alert(`Login failed: ${error.message}`);
     }
   };
-  const handleCancel=()=>{
-    setEmail('');
-    setPassword('');
-  }
+  // Handle cancel button logic
+  const handleCancel = () => {
+    setEmail("");
+    setPassword("");
+  };
 
   return (
     <Container

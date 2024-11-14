@@ -41,19 +41,22 @@ const BackgroundModal = ({ open, onClose, onSubmit, initialData }) => {
   );
   const [imageData, setImageData] = useState(initialData?.imageUrl || "");
   const [isDefault, setIsDefault] = useState(initialData?.isDefault || false);
+  // Reference for file input
   const fileInputRef = useRef(null);
 
+  // Handle image file selection and preview
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageData(reader.result);
+        setImageData(reader.result); // Save image as base64 string
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Reset modal data to defaults
   const resetData = () => {
     setBgType("solid");
     setColor("#ffffff");
@@ -63,10 +66,11 @@ const BackgroundModal = ({ open, onClose, onSubmit, initialData }) => {
     setImageData("");
     setIsDefault(false);
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = ""; // Clear file input
     }
   };
 
+  // Handle submit action, pass data and reset
   const handleSubmit = () => {
     const backgroundData = {
       type: bgType,

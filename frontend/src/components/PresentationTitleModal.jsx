@@ -24,24 +24,23 @@ const PresentationModal = ({
   initialData = null, 
   mode = "create",
 }) => {
-
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-    useEffect(() => {
-      if (initialData && mode === "edit") {
-        setTitle(initialData.Title || "");
-        setDescription(initialData.description || "");
-      }
-    }, [initialData, mode]);
+  useEffect(() => {
+    if (initialData && mode === "edit") {
+      setTitle(initialData.Title || "");
+      setDescription(initialData.description || "");
+    }
+  }, [initialData, mode]);
 
+  // Function to handle creating or editing a presentation
   const handleCreatePresentation = async (title, description) => {
     try {
       const data = await getStore();
       const { store } = data;
 
-      if(mode === 'create'){
+      if (mode === "create") {
         const timestamp = Date.now();
         const newId = `${timestamp}`;
 
@@ -49,15 +48,15 @@ const PresentationModal = ({
           store: {
             ...store,
             [newId]: {
-              1: {},
+              1: {}, // Add an empty slide
               Title: title,
               description: description || "",
             },
           },
         };
-         return await updateStore(updatedStore);
-      }else{
-         const updatedStore = {
+        return await updateStore(updatedStore); // Save new presentation
+      } else {
+        const updatedStore = {
           store: {
             ...store,
             [initialData.id]: {
@@ -67,13 +66,12 @@ const PresentationModal = ({
             },
           },
         };
-        return await updateStore(updatedStore);
+        return await updateStore(updatedStore); // Save edited presentation
       }
     } catch (error) {
       console.error("Failed to create presentation:", error);
       throw error;
     }
-    
   };
   const handleSubmit = async () => {
     if (!title.trim()) {

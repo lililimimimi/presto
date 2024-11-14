@@ -8,11 +8,12 @@ const PreviewMode = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [slideCount, setSlideCount] = useState(1);
   const navigate = useNavigate();
-  const location = useLocation();
-  const { id } = useParams();
-
+  const location = useLocation(); // To access query parameters
+  const { id } = useParams(); // Extract presentation ID from the URL
+  // Get the elements of the current slide
   const currentElements = presentation[currentIndex]?.elements || [];
 
+  // Fetch presentation data on mount or when id changes
   useEffect(() => {
     const getPresentation = async () => {
       try {
@@ -22,7 +23,7 @@ const PreviewMode = () => {
           const slides = Object.keys(data.store[id]).filter(
             (key) => !isNaN(key)
           );
-          setSlideCount(slides.length);
+          setSlideCount(slides.length); // Calculate total slides
         }
       } catch (error) {
         console.error("Error fetching presentation:", error);
@@ -31,21 +32,23 @@ const PreviewMode = () => {
     getPresentation();
   }, [id]);
 
-    useEffect(() => {
-      const slideNumber = new URLSearchParams(location.search).get("slide");
-      if (slideNumber) {
-        setCurrentIndex(parseInt(slideNumber, 10));
-      }
-    }, [location.search]);
+  // Update the current slide index
+  useEffect(() => {
+    const slideNumber = new URLSearchParams(location.search).get("slide");
+    if (slideNumber) {
+      setCurrentIndex(parseInt(slideNumber, 10));
+    }
+  }, [location.search]);
 
+  // Navigate to the previous slide
   const handlePrevious = () => {
-       if (currentIndex > 1) {
-         const newIndex = currentIndex - 1;
-         setCurrentIndex(newIndex);
-         navigate(`?slide=${newIndex}`, { replace: true });
-       }
+    if (currentIndex > 1) {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      navigate(`?slide=${newIndex}`, { replace: true });
+    }
   };
-
+  // Navigate to the next slide
   const handleToNext = () => {
     if (currentIndex < slideCount) {
       const newIndex = currentIndex + 1;
@@ -53,7 +56,7 @@ const PreviewMode = () => {
       navigate(`?slide=${newIndex}`, { replace: true });
     }
   };
-
+  // Add keyboard navigation for slides
   useEffect(() => {
     const keydown = (e) => {
       if (e.key === "ArrowLeft") {
@@ -66,6 +69,7 @@ const PreviewMode = () => {
     return () => window.removeEventListener("keydown", keydown);
   }, [currentIndex, slideCount]);
 
+  // Generate background style based on background type
   const getBackgroundStyle = (background) => {
     if (!background) return {};
 
@@ -86,9 +90,10 @@ const PreviewMode = () => {
         return {};
     }
   };
-    const handleExit = () => {
-      navigate(`/presentation/${id}?slide=${currentIndex}`);
-    };
+  // Exit preview mode
+  const handleExit = () => {
+    navigate(`/presentation/${id}?slide=${currentIndex}`);
+  };
 
   return (
     <Box
@@ -99,6 +104,7 @@ const PreviewMode = () => {
         flexDirection: "column",
       }}
     >
+      {/* Slide display area */}
       <Box
         sx={{
           flex: 1,
@@ -109,6 +115,7 @@ const PreviewMode = () => {
           ),
         }}
       >
+        {/* Exit Preview button */}
         <Button
           variant="contained"
           onClick={handleExit}
@@ -125,6 +132,7 @@ const PreviewMode = () => {
         >
           Exit Preview
         </Button>
+        {/* Render slide elements */}
         {currentElements.map((element, index) => (
           <Box
             key={index}
@@ -204,7 +212,7 @@ const PreviewMode = () => {
           </Box>
         ))}
       </Box>
-
+      {/* Navigation bar */}
       <Box
         sx={{
           display: "flex",
