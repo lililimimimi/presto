@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
 import ErrorModal from "./ErrorModal";
-import PresentationModal from "./PresentationModal";
+import PresentationModal from "./PresentationTitleModal";
 import TextModal from "./TextModal";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
@@ -386,6 +386,9 @@ const getBackgroundStyle = (background) => {
       </Box>
       <Button variant="contained" onClick={() => setShowBgModal(true)}>
         Set Background
+      </Button>
+      <Button onClick={() => navigate(`/presentation/${id}/preview`)}>
+        Preview
       </Button>
       <Box
         style={{

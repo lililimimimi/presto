@@ -5,6 +5,7 @@ import SignUpForm from './components/SignUpForm';
 import Logout from './components/Logout';
 import Dashboard from './components/Dashboard';
 import PresentationDetail from './components/PresentationDetail';
+import PreviewMode from './components/PreviewMode';
 
 
 function App() {
@@ -24,7 +25,11 @@ function App() {
             element={<SignUpForm setToken={setToken} />}
           ></Route>
           <Route path="/dashboard" element={<Dashboard />}></Route>
-          <Route path="/presentation/:id" element={<PresentationDetail />}></Route>
+          <Route
+            path="/presentation/:id"
+            element={<PresentationDetail />}
+          ></Route>
+          <Route path="/presentation/:id/preview" element={<PreviewMode />} />
         </Routes>
       </BrowserRouter>
     </>

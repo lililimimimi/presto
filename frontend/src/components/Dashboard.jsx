@@ -1,7 +1,7 @@
 import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import MediaCard from "./MediaCard";
-import PresentationModal from "./PresentationModal";
+import PresentationModal from "./PresentationTitleModal";
 import { getStore } from "../api/data";
 import { Box, Button } from "@mui/material";
 
