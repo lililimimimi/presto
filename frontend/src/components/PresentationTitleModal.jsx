@@ -8,17 +8,6 @@ import {
   Stack,
 } from "@mui/material"; 
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
-
 const PresentationModal = ({
   open,
   onClose,
@@ -109,6 +98,13 @@ const handleSubmit = async () => {
     alert(error.message);
   }
 };
+const handleCancel = () => {
+  setTitle("");
+  setDescription("");
+  setThumbnailFile(null);
+  setPreviewUrl("");
+  onClose();
+};
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title">
@@ -118,7 +114,10 @@ const handleSubmit = async () => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 400,
+          width: {
+            xs: "80%", 
+            sm: 400, 
+          },
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,
@@ -169,7 +168,7 @@ const handleSubmit = async () => {
             <Button variant="contained" onClick={handleSubmit} fullWidth>
               {mode === "create" ? "Create" : "Save"}
             </Button>
-            <Button variant="outlined" onClick={onClose} fullWidth>
+            <Button variant="outlined" onClick={handleCancel} fullWidth>
               Cancel
             </Button>
           </Box>

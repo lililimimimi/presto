@@ -21,8 +21,11 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400, 
-  maxHeight: "80vh", 
+  width: {
+    xs: "80%",
+    sm: 400,
+  },
+  maxHeight: "80vh",
   overflow: "auto",
   bgcolor: "background.paper",
   border: "2px solid #000",

@@ -10,8 +10,15 @@ import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
 import CodeModal from "./CodeModal";
 import BackgroundModal from "./BackgroundModal";
-import { Box, FormControl, InputLabel, Select, MenuItem,Paper,
-  Stack } from "@mui/material"; 
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Paper,
+  Stack,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PreviewIcon from "@mui/icons-material/Preview";
@@ -370,40 +377,50 @@ const PresentationDetail = () => {
     navigate(`/presentation/${id}/preview?slide=${currentIndex}`); // Navigate to the preview page
   };
 
-
   return (
     <Box>
       {/* Basic Operations Bar */}
       <Stack
-        direction="row"
+        direction={{ xs: "column", sm: "row" }}
         spacing={2}
-        alignItems="center"
-        sx={{ mb: 2, p: 1 }}
+        alignItems={{ xs: "stretch", sm: "center" }}
+        sx={{
+          mb: 2,
+          p: 1,
+        }}
       >
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/dashboard")}
-          size="small"
-          sx={{ color: "#3479E8" }}
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            width: { xs: "100%", sm: "auto" },
+          }}
         >
-          BACK
-        </Button>
-        <Button
-          startIcon={<DeleteIcon />}
-          onClick={handleDeleteClickModal}
-          size="small"
-          sx={{ color: "#3479E8" }}
-        >
-          DELETE
-        </Button>
-        <Button
-          startIcon={<EditIcon />}
-          onClick={() => setShowEditModal(true)}
-          size="small"
-          sx={{ color: "#3479E8" }}
-        >
-          EDIT
-        </Button>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate("/dashboard")}
+            size="small"
+            sx={{ color: "#3479E8" }}
+          >
+            BACK
+          </Button>
+          <Button
+            startIcon={<DeleteIcon />}
+            onClick={handleDeleteClickModal}
+            size="small"
+            sx={{ color: "#3479E8" }}
+          >
+            DELETE
+          </Button>
+          <Button
+            startIcon={<EditIcon />}
+            onClick={() => setShowEditModal(true)}
+            size="small"
+            sx={{ color: "#3479E8" }}
+          >
+            EDIT
+          </Button>
+        </Stack>
         <FormControl size="small" sx={{ minWidth: 150, zIndex: 2 }}>
           <InputLabel>Font Family</InputLabel>
           <Select
@@ -442,16 +459,23 @@ const PresentationDetail = () => {
       </Typography>
 
       {/* Edit tool */}
-      <Paper sx={{ p: 1 }}>
-        <Stack direction="row" alignItems="center">
+      <Paper sx={{ p: 1, mb: 2 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          sx={{
+            flexWrap: "wrap",
+            gap: 1,
+            "& .MuiButton-root": {
+              minWidth: { xs: "40px", sm: "auto" },
+            },
+          }}
+        >
           <Button size="small" onClick={createNewSlide}>
             <AddIcon />
           </Button>
-          <Button
-            size="small"
-            onClick={handleDeleteSlide}
-            disabled={sliedeCount <= 1}
-          >
+          <Button size="small" onClick={handleDeleteSlide}>
             <DeleteIcon />
           </Button>
 
@@ -577,16 +601,14 @@ const PresentationDetail = () => {
       {/* Slide count and naviagte */}
       <Box sx={{ mt: 2, mb: 2 }}>
         <Typography
-          gutterBottom
-          variant="body2"
-          component="div"
-          align="left"
           sx={{
-            mb: 2,
-            color: "text.secondary",
+            fontSize: "1em",
+            color: "grey",
+            width: "50px",
+            height: "50px",
           }}
         >
-          Slide {currentIndex} of {sliedeCount}
+          {currentIndex}
         </Typography>
         <Box
           sx={{
@@ -630,8 +652,10 @@ const PresentationDetail = () => {
         onConfirm={() => {
           if (deleteIndex !== null) {
             handleDeleteElement(deleteIndex);
-          } else {
+          } else if (sliedeCount <= 1) {
             handleDeletePresentation();
+          } else {
+            handleDeleteSlide();
           }
         }}
         title="Delete"
