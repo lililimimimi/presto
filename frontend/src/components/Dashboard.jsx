@@ -13,12 +13,18 @@ const Dashboard = () => {
     try {
       const data = await getStore();
       if (data && data.store) {
-        const presentationArray = Object.entries(data.store).map(
-          ([id, details]) => ({
-            id,
-            ...details,
-          })
-        );
+              const presentationArray = Object.entries(data.store).map(
+                ([id, presentation]) => {
+                  const slideCount = Object.keys(presentation).filter(
+                    (key) => !isNaN(key)
+                  ).length;
+                  return {
+                    id,
+                    ...presentation,
+                    slideCount,
+                  };
+                }
+              );
         setPresentation(presentationArray);
       }
     } catch (error) {
@@ -63,6 +69,8 @@ const Dashboard = () => {
           id={item.id}
           title={item.Title}
           description={item.description}
+          slideCount={item.slideCount}
+          thumbnailUrl={item.thumbnailUrl}
         />
       ))}
     </>

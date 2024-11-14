@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
-const MediaCard = ({ id, title, description}) => {
+const MediaCard = ({ id, title, description, slideCount, thumbnailUrl }) => {
   const navigate = useNavigate();
 
   const goToSinglePresentation = (id) => {
@@ -35,6 +35,9 @@ const MediaCard = ({ id, title, description}) => {
           sx={{
             height: "150px",
             backgroundColor: "#f5f5f5",
+            backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         />
         <CardContent>
@@ -47,14 +50,13 @@ const MediaCard = ({ id, title, description}) => {
             </Typography>
           )}
           <Typography variant="body2" color="text.secondary">
-            Slides: 1
+            Slides: {slideCount}
           </Typography>
         </CardContent>
         <CardActions>
           <Button size="small" onClick={() => goToSinglePresentation(id)}>
             Edit
           </Button>
-          <Button size="small">Learn More</Button>
         </CardActions>
       </Card>
     </Box>

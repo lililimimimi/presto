@@ -10,6 +10,7 @@ import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
 import CodeModal from "./CodeModal";
 import BackgroundModal from "./BackgroundModal";
+import ThumbnailModal from "./ThumbnailModal ";
 import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material"; 
 
 const PresentationDetail = () => {
@@ -18,6 +19,7 @@ const PresentationDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+ const [editingThumbnail, setEditingThumbnail] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
@@ -352,6 +354,28 @@ const handlePreview = () => {
   navigate(`/presentation/${id}/preview?slide=${currentIndex}`);
 };
 
+const handleThumbnailUpdate = async (thumbnailData) => {
+  try {
+    const data = await getStore();
+    const presentationData = data.store[id];
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: {
+          ...presentationData,
+          thumbnailUrl: thumbnailData.thumbnailUrl,
+        },
+      },
+    };
+
+    await updateStore(updatedStore);
+    getPresentationDetail(); 
+  } catch (error) {
+    console.error("Failed to update thumbnail:", error);
+  }
+};
+
   return (
     <>
       <Button variant="contained" onClick={() => navigate("/dashboard")}>
@@ -362,6 +386,12 @@ const handlePreview = () => {
       </Button>
       <Button variant="contained" onClick={() => setShowEditModal(true)}>
         Edit
+      </Button>
+      <Button
+        variant="contained"
+        onClick={() => setEditingThumbnail(presentation)}
+      >
+        Thmbnail
       </Button>
       <Typography gutterBottom variant="h5" component="div">
         Title: {presentation?.Title || "Loading..."}
@@ -568,6 +598,11 @@ const handlePreview = () => {
           presentation[currentIndex]?.background ||
           presentation?.defaultBackground
         }
+      />
+      <ThumbnailModal
+        onSubmit={handleThumbnailUpdate}
+        initialData={editingThumbnail}
+        onClose={() => setEditingThumbnail(null)} 
       />
       {showEditModal && (
         <PresentationModal
