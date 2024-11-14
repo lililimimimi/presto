@@ -127,7 +127,7 @@ const PresentationModal = ({
             <Button variant="contained" onClick={handleSubmit}>
               {mode === "create" ? "Create" : "Save"}
             </Button>
-            <Button variant="contained" onClick={onClose}>
+            <Button variant="outlined" onClick={onClose}>
               Cancel
             </Button>
           </Box>

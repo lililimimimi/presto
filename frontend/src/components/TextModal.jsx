@@ -129,7 +129,7 @@ const TextModal = ({
             <Button variant="contained" onClick={handleSubmit}>
               {initialData ? "Update" : "Add"}
             </Button>
-            <Button variant="contained" onClick={handleClose}>
+            <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
           </Box>

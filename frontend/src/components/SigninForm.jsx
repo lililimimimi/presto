@@ -78,7 +78,7 @@ const SignInForm = (props) => {
           >
             Login
           </Button>
-          <Button variant="contained" style={styles.button}>
+          <Button variant="outlined" style={styles.button}>
             Cancel
           </Button>
         </div>

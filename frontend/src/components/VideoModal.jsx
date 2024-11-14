@@ -105,7 +105,7 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
             <Button variant="contained" onClick={handleSubmit}>
               {initialData ? "Update Video" : "Add Video"}
             </Button>
-            <Button variant="contained" onClick={handleClose}>
+            <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
           </Box>

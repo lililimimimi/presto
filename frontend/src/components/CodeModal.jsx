@@ -178,7 +178,7 @@ const CodeModal = ({ onSubmit, initialData = null, onClose }) => {
             <Button variant="contained" onClick={handleSubmit}>
               {initialData ? "Update" : "Add"}
             </Button>
-            <Button variant="contained" onClick={handleClose}>
+            <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
           </Box>

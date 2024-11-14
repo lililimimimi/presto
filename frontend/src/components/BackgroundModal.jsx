@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Button,
@@ -40,8 +39,33 @@ const BackgroundModal = ({ open, onClose, onSubmit, initialData }) => {
   const [gradientDirection, setGradientDirection] = useState(
     initialData?.gradientDirection || "to bottom"
   );
-  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
+  const [imageData, setImageData] = useState(initialData?.imageUrl || "");
   const [isDefault, setIsDefault] = useState(initialData?.isDefault || false);
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageData(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const resetData = () => {
+    setBgType("solid");
+    setColor("#ffffff");
+    setGradientStart("#ffffff");
+    setGradientEnd("#000000");
+    setGradientDirection("to bottom");
+    setImageData("");
+    setIsDefault(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = () => {
     const backgroundData = {
@@ -53,14 +77,20 @@ const BackgroundModal = ({ open, onClose, onSubmit, initialData }) => {
         gradientEnd,
         gradientDirection,
       }),
-      ...(bgType === "image" && { imageUrl }),
+      ...(bgType === "image" && { imageUrl: imageData }),
     };
     onSubmit(backgroundData);
+    resetData();
+    onClose();
+  };
+
+  const handleClose = () => {
+    resetData();
     onClose();
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
         <FormControl fullWidth margin="normal">
           <FormLabel>Background Type</FormLabel>
@@ -123,7 +153,6 @@ const BackgroundModal = ({ open, onClose, onSubmit, initialData }) => {
               >
                 <MenuItem value="to bottom">Top to Bottom</MenuItem>
                 <MenuItem value="to right">Left to Right</MenuItem>
-                <MenuItem value="to bottom right">Diagonal</MenuItem>
               </Select>
             </FormControl>
           </>
@@ -131,17 +160,25 @@ const BackgroundModal = ({ open, onClose, onSubmit, initialData }) => {
 
         {bgType === "image" && (
           <FormControl fullWidth margin="normal">
-            <FormLabel>Image URL</FormLabel>
-            <TextField
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              fullWidth
-              placeholder="Enter image URL"
+            <FormLabel>Upload Image</FormLabel>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              ref={fileInputRef}
+              style={{ display: "none" }}
             />
-            {imageUrl && (
+            <Button
+              variant="outlined"
+              onClick={() => fileInputRef.current.click()}
+              sx={{ mt: 1 }}
+            >
+              Choose Image File
+            </Button>
+            {imageData && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <img
-                  src={imageUrl}
+                  src={imageData}
                   alt="Background preview"
                   style={{ maxWidth: "100%", maxHeight: "150px" }}
                 />
@@ -165,7 +202,7 @@ const BackgroundModal = ({ open, onClose, onSubmit, initialData }) => {
           <Button variant="contained" onClick={handleSubmit} fullWidth>
             Apply Background
           </Button>
-          <Button variant="outlined" onClick={onClose} fullWidth>
+          <Button variant="outlined" onClick={handleClose} fullWidth>
             Cancel
           </Button>
         </Box>

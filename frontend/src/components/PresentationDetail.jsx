@@ -27,6 +27,7 @@ const PresentationDetail = () => {
   const [lastClickTime, setLastClickTime] = useState(0);
   const [selectedTextBox, setSelectedTextBox] = useState(null);
   const [currentFont, setCurrentFont] = useState("Arial, sans-serif"); 
+  const [showBgModal, setShowBgModal] = useState(false);
   const { id } = useParams();
 
    const fontFamilies = [
@@ -287,6 +288,54 @@ const handleFontChange = async (event) => {
     console.error("Failed to update font:", error);
   }
 };
+const handleBackgroundSubmit = async (backgroundData) => {
+  try {
+    const data = await getStore();
+    const presentation = data.store[id];
+
+    if (backgroundData.isDefault) {
+      presentation.defaultBackground = backgroundData;
+    } else {
+      if (!presentation[currentIndex]) {
+        presentation[currentIndex] = {};
+      }
+      presentation[currentIndex].background = backgroundData;
+    }
+
+    const updatedStore = {
+      store: {
+        ...data.store,
+        [id]: presentation,
+      },
+    };
+
+    await updateStore(updatedStore);
+    setPresentation(presentation);
+  } catch (error) {
+    console.error("Failed to update background:", error);
+  }
+};
+const getBackgroundStyle = (background) => {
+  if (!background) return {};
+
+  switch (background.type) {
+    case "solid":
+      return { backgroundColor: background.color };
+    case "gradient":
+      return {
+        background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
+      };
+    case "image":
+      return {
+        backgroundImage: `url(${background.imageUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+    default:
+      return {};
+  }
+};
+
 
   return (
     <>
@@ -335,12 +384,19 @@ const handleFontChange = async (event) => {
           </Select>
         </FormControl>
       </Box>
+      <Button variant="contained" onClick={() => setShowBgModal(true)}>
+        Set Background
+      </Button>
       <Box
         style={{
           width: "100%",
           height: "500px",
           border: "1px solid black",
           position: "relative",
+          ...getBackgroundStyle(
+            presentation[currentIndex]?.background ||
+              presentation?.defaultBackground
+          ),
         }}
       >
         {currentElements.map((element, index) => (
@@ -490,6 +546,15 @@ const handleFontChange = async (event) => {
           deleteIndex !== null
             ? "Are you sure to delete this element?"
             : "This presentation will be permanently deleted. Continue?"
+        }
+      />
+      <BackgroundModal
+        open={showBgModal}
+        onClose={() => setShowBgModal(false)}
+        onSubmit={handleBackgroundSubmit}
+        initialData={
+          presentation[currentIndex]?.background ||
+          presentation?.defaultBackground
         }
       />
       {showEditModal && (

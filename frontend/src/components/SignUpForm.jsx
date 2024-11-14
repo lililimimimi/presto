@@ -114,7 +114,7 @@ const SignUpForm = (props) => {
           >
             Register
           </Button>
-          <Button variant="contained" style={styles.button}>
+          <Button variant="outlined" style={styles.button}>
             Cancel
           </Button>
         </div>
