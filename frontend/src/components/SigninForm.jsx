@@ -33,12 +33,16 @@ const SignInForm = ({ setToken }) => {
     <Container
       maxWidth="sm"
       sx={{
-        minHeight: "100vh",
+        minHeight: "80vh",
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <Paper elevation={3} sx={{ p: 3, width: "100%" }}>
+      <Paper
+        elevation={3}
+        sx={{ p: 3, width: "100%", maxWidth: "400px", mx: "auto" }}
+      >
         <Stack spacing={2}>
           <TextField
             label="Email"
