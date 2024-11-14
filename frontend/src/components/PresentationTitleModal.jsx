@@ -119,15 +119,14 @@ const PresentationModal = ({
           <Box
             sx={{
               display: "flex",
-              justifyContent: "center",
               gap: 2,
               mt: 2,
             }}
           >
-            <Button variant="contained" onClick={handleSubmit}>
+            <Button variant="contained" onClick={handleSubmit} fullWidth>
               {mode === "create" ? "Create" : "Save"}
             </Button>
-            <Button variant="outlined" onClick={onClose}>
+            <Button variant="outlined" onClick={onClose} fullWidth>
               Cancel
             </Button>
           </Box>

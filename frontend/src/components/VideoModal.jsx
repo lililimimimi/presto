@@ -57,7 +57,9 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
   return (
     <Box>
       {!initialData && (
-        <Button onClick={() => setOpen(true)}><OndemandVideoIcon/></Button>
+        <Button onClick={() => setOpen(true)}>
+          <OndemandVideoIcon />
+        </Button>
       )}
       <Modal
         open={initialData ? true : open}
@@ -97,16 +99,14 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
           />
           <Box
             sx={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              display: "flex",
               gap: 2,
-              mt: 2,
             }}
           >
-            <Button variant="contained" onClick={handleSubmit}>
+            <Button variant="contained" onClick={handleSubmit} fullWidth>
               {initialData ? "Update Video" : "Add Video"}
             </Button>
-            <Button variant="outlined" onClick={handleClose}>
+            <Button variant="outlined" onClick={handleClose} fullWidth>
               Cancel
             </Button>
           </Box>

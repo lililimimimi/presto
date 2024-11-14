@@ -1,15 +1,14 @@
-import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, TextField, Container, Paper, Stack } from "@mui/material";
 import { register } from "../api/data";
 
-const SignUpForm = (props) => {
+const SignUpForm = ({ setToken }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const navigate = useNavigate();
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleRegister = async () => {
     try {
@@ -30,126 +29,89 @@ const SignUpForm = (props) => {
         return;
       }
       const data = await register(email, password, name);
-      props.setToken(data.token);
+      setToken(data.token);
       localStorage.setItem("token", data.token);
-      console.log("Registration successful:", data);
       navigate("/dashboard");
     } catch (error) {
-      window.alert(`Registration failed:: ${error.message}`);
-      console.error("Registration failed:", error);
+      window.alert(`Registration failed: ${error.message}`);
     }
   };
-
-  const handleToLogin = () => {
-    navigate("/login");
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleRegister();
-    }
-  };
+    const handleCancel = () => {
+      setEmail("");
+      setPassword("");
+      setName("");
+      setConfirmPassword("");
+    };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.formContainer}>
-        <div style={styles.inputContainer}>
-          <div style={styles.inputContainer}>
-            <TextField
-              id="signUpName"
-              label="Name"
-              variant="outlined"
-              fullWidth
-              style={styles.textField}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
+    <Container
+      maxWidth="sm"
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <Paper elevation={3} sx={{ p: 3, width: "100%" }}>
+        <Stack spacing={2}>
           <TextField
-            id="signUpEmail"
+            label="Name"
+            variant="outlined"
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleRegister()}
+          />
+
+          <TextField
             label="Email"
             variant="outlined"
             fullWidth
-            style={styles.textField}
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => e.key === "Enter" && handleRegister()}
           />
-        </div>
-        <div style={styles.inputContainer}>
+
           <TextField
-            id="signUpPass"
             label="Password"
-            variant="outlined"
             type="password"
+            variant="outlined"
             fullWidth
-            style={styles.textField}
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => e.key === "Enter" && handleRegister()}
           />
-        </div>
-        <div style={styles.inputContainer}>
+
           <TextField
-            id="signUpCompass"
-            label="ConfirmPassword"
-            variant="outlined"
+            label="Confirm Password"
             type="password"
+            variant="outlined"
             fullWidth
-            style={styles.textField}
+            value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => e.key === "Enter" && handleRegister()}
           />
-        </div>
-        <Button
-          variant="text"
-          style={{ fontStyle: "italic" }}
-          onClick={handleToLogin}
-        >
-          Want to log in?
-        </Button>
-        <div style={styles.buttonContainer}>
+
           <Button
-            variant="contained"
-            style={styles.button}
-            onClick={handleRegister}
+            variant="text"
+            onClick={() => navigate("/login")}
+            sx={{ fontStyle: "italic" }}
           >
-            Register
+            Want to log in?
           </Button>
-          <Button variant="outlined" style={styles.button}>
-            Cancel
-          </Button>
-        </div>
-      </div>
-    </div>
+
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button variant="contained" fullWidth onClick={handleRegister}>
+              Register
+            </Button>
+            <Button variant="outlined" fullWidth onClick={handleCancel}>
+              Cancel
+            </Button>
+          </Box>
+        </Stack>
+      </Paper>
+    </Container>
   );
-};
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-  },
-  formContainer: {
-    width: "100%",
-    maxWidth: "400px",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  },
-  inputContainer: {
-    marginBottom: "20px",
-  },
-  textField: {
-    width: "100%",
-  },
-  buttonContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "10px",
-  },
-  button: {
-    flexGrow: 1,
-  },
 };
 
 export default SignUpForm;

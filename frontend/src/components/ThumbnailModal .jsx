@@ -95,8 +95,7 @@ const ThumbnailModal = ({
           </Box>
           <Box
             sx={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              display: "flex",
               gap: 2,
               mt: 2,
             }}
@@ -105,10 +104,11 @@ const ThumbnailModal = ({
               variant="contained"
               onClick={handleSubmit}
               disabled={!thumbnailFile && !initialData}
+              fullWidth
             >
               {initialData ? "Update" : "Add"}
             </Button>
-            <Button variant="outlined" onClick={handleClose}>
+            <Button variant="outlined" onClick={handleClose} fullWidth>
               Cancel
             </Button>
           </Box>

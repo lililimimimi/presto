@@ -99,7 +99,9 @@ const ImageModal = ({
   return (
     <Box>
       {!initialData && (
-        <Button onClick={handleOpen}><ImageIcon/></Button>
+        <Button onClick={handleOpen}>
+          <ImageIcon />
+        </Button>
       )}
       <Modal
         open={initialData ? true : open}
@@ -148,7 +150,6 @@ const ImageModal = ({
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
               gap: 2,
               mt: 2,
             }}
@@ -159,7 +160,7 @@ const ImageModal = ({
             >
               Upload Image
             </Button>
-            <Button variant="contained" onClick={handleSubmit}>
+            <Button variant="outlined" onClick={handleSubmit}>
               {initialData ? "Update" : "Add"}
             </Button>
             <Button variant="contained" onClick={handleClose}>

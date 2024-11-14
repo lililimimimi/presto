@@ -66,7 +66,11 @@ const TextModal = ({
 
   return (
     <Box>
-      {!initialData && <Button onClick={handleOpen}><FormatColorTextIcon /></Button>}
+      {!initialData && (
+        <Button onClick={handleOpen}>
+          <FormatColorTextIcon />
+        </Button>
+      )}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}
@@ -121,16 +125,15 @@ const TextModal = ({
           </Box>
           <Box
             sx={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              display: "flex",
               gap: 2,
               mt: 2,
             }}
           >
-            <Button variant="contained" onClick={handleSubmit}>
+            <Button variant="contained" onClick={handleSubmit} fullWidth>
               {initialData ? "Update" : "Add"}
             </Button>
-            <Button variant="outlined" onClick={handleClose}>
+            <Button variant="outlined" onClick={handleClose} fullWidth>
               Cancel
             </Button>
           </Box>
