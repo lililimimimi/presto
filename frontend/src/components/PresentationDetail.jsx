@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
@@ -25,7 +25,6 @@ const PresentationDetail = () => {
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [selectedElement, setSelectedElement] = useState(null);
   const [lastClickTime, setLastClickTime] = useState(0);
-  const [selectedTextBox, setSelectedTextBox] = useState(null);
   const [currentFont, setCurrentFont] = useState("Arial, sans-serif"); 
   const [showBgModal, setShowBgModal] = useState(false);
   const { id } = useParams();
@@ -37,6 +36,12 @@ const PresentationDetail = () => {
      { value: "Georgia, serif", label: "Georgia" },
      { value: "Helvetica, sans-serif", label: "Helvetica" },
    ];
+  useEffect(() => {
+    const slideNumber = new URLSearchParams(location.search).get("slide");
+    if (slideNumber) {
+      setCurrentIndex(parseInt(slideNumber, 10));
+    }
+  }, [location.search]);
 
   const handleDeleteClickModal = () => {
     setShowDeleteModal(true);
@@ -82,18 +87,26 @@ const PresentationDetail = () => {
       setError("Failed to delete presentation");
     }
   };
-  const handleToPre = () => {
-    setCurrentIndex((pre) => (pre > 1 ? pre - 1 : pre));
+  const handlePrevious = () => {
+      if (currentIndex > 1) {
+        const newIndex = currentIndex - 1;
+        setCurrentIndex(newIndex);
+        navigate(`?slide=${newIndex}`, { replace: true });
+      }
   };
 
   const handleToNext = () => {
-    setCurrentIndex((pre) => (pre < sliedeCount ? pre + 1 : pre));
+    if (currentIndex < sliedeCount) {
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      navigate(`?slide=${newIndex}`, { replace: true });
+    }
   };
 
   useEffect(() => {
     const keydown = (e) => {
       if (e.key === "ArrowLeft") {
-        handleToPre();
+        handlePrevious();
       } else if (e.key === "ArrowRight") {
         handleToNext();
       }
@@ -335,7 +348,9 @@ const getBackgroundStyle = (background) => {
       return {};
   }
 };
-
+const handlePreview = () => {
+  navigate(`/presentation/${id}/preview?slide=${currentIndex}`);
+};
 
   return (
     <>
@@ -387,9 +402,7 @@ const getBackgroundStyle = (background) => {
       <Button variant="contained" onClick={() => setShowBgModal(true)}>
         Set Background
       </Button>
-      <Button onClick={() => navigate(`/presentation/${id}/preview`)}>
-        Preview
-      </Button>
+      <Button onClick={handlePreview}>Preview</Button>
       <Box
         style={{
           width: "100%",
@@ -405,7 +418,7 @@ const getBackgroundStyle = (background) => {
         {currentElements.map((element, index) => (
           <Box
             key={index}
-            onClick={() => handleElementClick(element, index)}
+            onMouseDown={(e) => handleElementClick(element, index)}
             style={{
               position: "absolute",
               top: `${element.position?.y || 0}%`,
@@ -431,10 +444,6 @@ const getBackgroundStyle = (background) => {
                     color: element.color || "#000000",
                     fontFamily: element.fontFamily || currentFont,
                     wordWrap: "break-word",
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedTextBox(index);
                   }}
                 >
                   {element.text}
@@ -510,7 +519,7 @@ const getBackgroundStyle = (background) => {
       >
         <Button
           variant="contained"
-          onClick={handleToPre}
+          onClick={handlePrevious}
           disabled={currentIndex === 1}
           sx={{
             minWidth: "120px",

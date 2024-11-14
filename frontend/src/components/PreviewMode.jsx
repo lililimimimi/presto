@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState} from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
 import { getStore } from "../api/data";
 
@@ -7,6 +7,8 @@ const PreviewMode = () => {
   const [presentation, setPresentation] = useState({});
   const [currentIndex, setCurrentIndex] = useState(1);
   const [slideCount, setSlideCount] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
 
   const currentElements = presentation[currentIndex]?.elements || [];
@@ -29,18 +31,33 @@ const PreviewMode = () => {
     getPresentation();
   }, [id]);
 
-  const handleToPre = () => {
-    setCurrentIndex((pre) => (pre > 1 ? pre - 1 : pre));
+    useEffect(() => {
+      const slideNumber = new URLSearchParams(location.search).get("slide");
+      if (slideNumber) {
+        setCurrentIndex(parseInt(slideNumber, 10));
+      }
+    }, [location.search]);
+
+  const handlePrevious = () => {
+       if (currentIndex > 1) {
+         const newIndex = currentIndex - 1;
+         setCurrentIndex(newIndex);
+         navigate(`?slide=${newIndex}`, { replace: true });
+       }
   };
 
   const handleToNext = () => {
-    setCurrentIndex((pre) => (pre < slideCount ? pre + 1 : pre));
+    if (currentIndex < slideCount) {
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      navigate(`?slide=${newIndex}`, { replace: true });
+    }
   };
 
   useEffect(() => {
     const keydown = (e) => {
       if (e.key === "ArrowLeft") {
-        handleToPre();
+        handlePrevious();
       } else if (e.key === "ArrowRight") {
         handleToNext();
       }
@@ -69,6 +86,9 @@ const PreviewMode = () => {
         return {};
     }
   };
+    const handleExit = () => {
+      navigate(`/presentation/${id}?slide=${currentIndex}`);
+    };
 
   return (
     <Box
@@ -77,7 +97,6 @@ const PreviewMode = () => {
         height: "100vh",
         display: "flex",
         flexDirection: "column",
-        bgcolor: "black",
       }}
     >
       <Box
@@ -90,6 +109,22 @@ const PreviewMode = () => {
           ),
         }}
       >
+        <Button
+          variant="contained"
+          onClick={handleExit}
+          sx={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            zIndex: 1000,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+            },
+          }}
+        >
+          Exit Preview
+        </Button>
         {currentElements.map((element, index) => (
           <Box
             key={index}
@@ -146,7 +181,18 @@ const PreviewMode = () => {
               />
             )}
             {element.type === "code" && (
-              <pre>
+              <pre
+                style={{
+                  margin: 0,
+                  padding: "1em",
+                  fontSize: element.fontSize || "1em",
+                  fontFamily: "monospace",
+                  width: "100%",
+                  height: "100%",
+                  overflow: "auto",
+                  backgroundColor: "#f5f5f5",
+                }}
+              >
                 <code
                   dangerouslySetInnerHTML={{
                     __html: element.highlightedCode,
@@ -159,10 +205,20 @@ const PreviewMode = () => {
         ))}
       </Box>
 
-      <Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 2,
+          p: 2,
+          bgcolor: "black",
+          color: "white",
+        }}
+      >
         <Button
           variant="contained"
-          onClick={handleToPre}
+          onClick={handlePrevious}
           disabled={currentIndex === 1}
         >
           Previous
