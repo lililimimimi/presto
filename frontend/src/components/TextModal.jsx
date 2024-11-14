@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { TextField } from "@mui/material";
+import FormatColorTextIcon from "@mui/icons-material/FormatColorText";
 
 const style = {
   position: "absolute",
@@ -65,7 +66,7 @@ const TextModal = ({
 
   return (
     <Box>
-      {!initialData && <Button onClick={handleOpen}>Create a text box</Button>}
+      {!initialData && <Button onClick={handleOpen}><FormatColorTextIcon /></Button>}
       <Modal
         open={initialData ? true : open}
         onClose={handleClose}

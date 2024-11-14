@@ -12,6 +12,10 @@ import CodeModal from "./CodeModal";
 import BackgroundModal from "./BackgroundModal";
 import ThumbnailModal from "./ThumbnailModal ";
 import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material"; 
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PreviewIcon from "@mui/icons-material/Preview";
+import ColorizeIcon from "@mui/icons-material/Colorize";
 
 const PresentationDetail = () => {
   const navigate = useNavigate();
@@ -399,15 +403,14 @@ const handleThumbnailUpdate = async (thumbnailData) => {
       <Typography variant="body1" component="div">
         {presentation.description}
       </Typography>
-      <Button variant="contained" onClick={createNewSlide}>
-        Create
+      <Button onClick={createNewSlide}>
+        <AddIcon />
       </Button>
       <Button
-        variant="contained"
         onClick={handleDeleteSlide}
         disabled={sliedeCount <= 1}
       >
-        Delete Slide
+        <DeleteIcon />
       </Button>
       <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
         <FormControl sx={{ minWidth: 200 }}>
@@ -429,10 +432,10 @@ const handleThumbnailUpdate = async (thumbnailData) => {
           </Select>
         </FormControl>
       </Box>
-      <Button variant="contained" onClick={() => setShowBgModal(true)}>
-        Set Background
+      <Button onClick={() => setShowBgModal(true)}>
+        <ColorizeIcon />
       </Button>
-      <Button onClick={handlePreview}>Preview</Button>
+      <Button onClick={handlePreview}><PreviewIcon /></Button>
       <Box
         style={{
           width: "100%",
@@ -599,11 +602,13 @@ const handleThumbnailUpdate = async (thumbnailData) => {
           presentation?.defaultBackground
         }
       />
-      <ThumbnailModal
-        onSubmit={handleThumbnailUpdate}
-        initialData={editingThumbnail}
-        onClose={() => setEditingThumbnail(null)} 
-      />
+      {editingThumbnail && (
+        <ThumbnailModal
+          onSubmit={handleThumbnailUpdate}
+          initialData={editingThumbnail}
+          onClose={() => setEditingThumbnail(null)}
+        />
+      )}
       {showEditModal && (
         <PresentationModal
           open={showEditModal}

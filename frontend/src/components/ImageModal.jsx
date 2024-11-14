@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { TextField } from "@mui/material";
+import ImageIcon from "@mui/icons-material/Image";
 
 const style = {
   position: "absolute",
@@ -98,7 +99,7 @@ const ImageModal = ({
   return (
     <Box>
       {!initialData && (
-        <Button onClick={handleOpen}>Create an image box</Button>
+        <Button onClick={handleOpen}><ImageIcon/></Button>
       )}
       <Modal
         open={initialData ? true : open}

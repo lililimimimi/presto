@@ -14,6 +14,7 @@ import "prismjs/themes/prism.css";
 import "prismjs/components/prism-python";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-c";
+import CodeIcon from "@mui/icons-material/Code";
 
 const style = {
   position: "absolute",
@@ -113,7 +114,7 @@ const CodeModal = ({ onSubmit, initialData = null, onClose }) => {
   return (
     <Box>
       {!initialData && (
-        <Button onClick={() => setOpen(true)}>Add Code Block</Button>
+        <Button onClick={() => setOpen(true)}><CodeIcon /></Button>
       )}
       <Modal open={initialData ? true : open} onClose={handleClose}>
         <Box sx={style}>

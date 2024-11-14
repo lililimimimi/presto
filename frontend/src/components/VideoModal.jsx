@@ -5,6 +5,7 @@ import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 
 const style = {
   position: "absolute",
@@ -56,7 +57,7 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
   return (
     <Box>
       {!initialData && (
-        <Button onClick={() => setOpen(true)}>Create a Video</Button>
+        <Button onClick={() => setOpen(true)}><OndemandVideoIcon/></Button>
       )}
       <Modal
         open={initialData ? true : open}
