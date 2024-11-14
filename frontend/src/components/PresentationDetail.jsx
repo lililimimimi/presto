@@ -27,7 +27,7 @@ const PresentationDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
- const [editingThumbnail, setEditingThumbnail] = useState(null);
+  const [editingThumbnail, setEditingThumbnail] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
@@ -35,28 +35,30 @@ const PresentationDetail = () => {
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [selectedElement, setSelectedElement] = useState(null);
   const [lastClickTime, setLastClickTime] = useState(0);
-  const [currentFont, setCurrentFont] = useState("Arial, sans-serif"); 
+  const [currentFont, setCurrentFont] = useState("Arial, sans-serif");
   const [showBgModal, setShowBgModal] = useState(false);
   const { id } = useParams();
 
-   const fontFamilies = [
-     { value: "Arial, sans-serif", label: "Arial" },
-     { value: "Times New Roman, serif", label: "Times New Roman" },
-     { value: "Courier New, monospace", label: "Courier New" },
-     { value: "Georgia, serif", label: "Georgia" },
-     { value: "Helvetica, sans-serif", label: "Helvetica" },
-   ];
+  // Defines font options for the presentation editor.
+  const fontFamilies = [
+    { value: "Arial, sans-serif", label: "Arial" },
+    { value: "Times New Roman, serif", label: "Times New Roman" },
+    { value: "Courier New, monospace", label: "Courier New" },
+    { value: "Georgia, serif", label: "Georgia" },
+    { value: "Helvetica, sans-serif", label: "Helvetica" },
+  ];
+  // Updates `currentIndex` based on the slide parameter in the URL whenever it changes.
   useEffect(() => {
     const slideNumber = new URLSearchParams(location.search).get("slide");
     if (slideNumber) {
       setCurrentIndex(parseInt(slideNumber, 10));
     }
   }, [location.search]);
-
+  // Opens the delete confirmation modal when the delete button is clicked.
   const handleDeleteClickModal = () => {
     setShowDeleteModal(true);
   };
-
+  // Fetches presentation details and updates state.
   const getPresentationDetail = async () => {
     setLoading(true);
     try {
@@ -77,10 +79,12 @@ const PresentationDetail = () => {
       console.error("Error fetching presentations:", error);
     }
   };
+  // Loads presentation details when the id changes.
   useEffect(() => {
     getPresentationDetail();
   }, [id]);
 
+  // Deletes the current presentation
   const handleDeletePresentation = async () => {
     try {
       const data = await getStore();
@@ -97,14 +101,15 @@ const PresentationDetail = () => {
       setError("Failed to delete presentation");
     }
   };
+  // Navigates to the previous slide
   const handlePrevious = () => {
-      if (currentIndex > 1) {
-        const newIndex = currentIndex - 1;
-        setCurrentIndex(newIndex);
-        navigate(`?slide=${newIndex}`, { replace: true });
-      }
+    if (currentIndex > 1) {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      navigate(`?slide=${newIndex}`, { replace: true });
+    }
   };
-
+  // Navigates to the next slide
   const handleToNext = () => {
     if (currentIndex < sliedeCount) {
       const newIndex = currentIndex + 1;
@@ -112,7 +117,7 @@ const PresentationDetail = () => {
       navigate(`?slide=${newIndex}`, { replace: true });
     }
   };
-
+  // Adds keyboard navigation for slides using arrow keys.
   useEffect(() => {
     const keydown = (e) => {
       if (e.key === "ArrowLeft") {
@@ -124,7 +129,7 @@ const PresentationDetail = () => {
     window.addEventListener("keydown", keydown);
     return () => [window.removeEventListener("keydown", keydown)];
   }, [currentIndex, sliedeCount]);
-
+  // Creates a new slide and navigates to it.
   const createNewSlide = async () => {
     try {
       const data = await getStore();
@@ -138,18 +143,17 @@ const PresentationDetail = () => {
           ...data.store,
           [id]: {
             ...presentation,
-            [newSlideNumber]: {},
+            [newSlideNumber]: {}, // Add a new empty slide
           },
         },
       };
       await updateStore(updatedStore);
-      getPresentationDetail();
-      setCurrentIndex(newSlideNumber);
+      getPresentationDetail(); // Refresh presentation data
+      setCurrentIndex(newSlideNumber); // Navigate to the new slide
     } catch (error) {
       console.error("Failed to create new slide:", error);
     }
   };
-
   const handleDeleteSlide = async () => {
     try {
       const data = await getStore();
@@ -169,100 +173,98 @@ const PresentationDetail = () => {
           },
         },
       };
-      delete updatedStore.store[id][currentIndex];
+      delete updatedStore.store[id][currentIndex]; // Remove current slide
       await updateStore(updatedStore);
-      setSlideCount((prev) => prev - 1);
+      setSlideCount((prev) => prev - 1); // Update slide count
       if (currentIndex === slides.length) {
         setCurrentIndex((prev) => prev - 1);
       }
       getPresentationDetail();
     } catch (error) {}
   };
+  const handleEditElement = async (updatedData) => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
 
-const handleEditElement = async (updatedData) => {
-  try {
-    const data = await getStore();
-    const presentation = data.store[id];
-
-    presentation[currentIndex].elements[editingElement.index] = {
-      ...presentation[currentIndex].elements[editingElement.index],
-      ...updatedData,
-    };
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: presentation,
-      },
-    };
-
-    await updateStore(updatedStore);
-    setPresentation(presentation);
-    setEditingElement(null);
-  } catch (error) {
-    console.error("Failed to update element:", error);
-  }
-};
-const handleAddElement = async (elementData) => {
-  try {
-    const data = await getStore();
-    const presentation = data.store[id];
-
-    if (!presentation[currentIndex]?.elements) {
-      presentation[currentIndex] = {
-        ...presentation[currentIndex],
-        elements: [],
+      presentation[currentIndex].elements[editingElement.index] = {
+        ...presentation[currentIndex].elements[editingElement.index],
+        ...updatedData,
       };
-    }
 
-    presentation[currentIndex].elements.push(elementData);
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: {
-          ...presentation,
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: presentation,
         },
-      },
-    };
+      };
 
-    await updateStore(updatedStore);
-    setPresentation(presentation);
-  } catch (error) {
-    console.error("Failed to add element:", error);
-  }
-};
+      await updateStore(updatedStore);
+      setPresentation(presentation); // Update state with the modified presentation
+      setEditingElement(null); // Exit edit mode
+    } catch (error) {
+      console.error("Failed to update element:", error);
+    }
+  };
+  const handleAddElement = async (elementData) => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
 
-const handleDeleteElement = async (index) => {
-  try {
-    const data = await getStore();
-    const presentation = data.store[id];
+      if (!presentation[currentIndex]?.elements) {
+        presentation[currentIndex] = {
+          ...presentation[currentIndex],
+          elements: [],
+        };
+      }
 
-    presentation[currentIndex].elements = presentation[
-      currentIndex
-    ].elements.filter((_, i) => i !== index);
+      presentation[currentIndex].elements.push(elementData); // Add new element
 
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: presentation,
-      },
-    };
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: {
+            ...presentation,
+          },
+        },
+      };
 
-    await updateStore(updatedStore);
-    setPresentation(presentation);
-    setShowDeleteModal(false);
-    setDeleteIndex(null);
-  } catch (error) {
-    console.error("Failed to delete element:", error);
-  }
-};
-  
+      await updateStore(updatedStore);
+      setPresentation(presentation); // Refresh presentation data
+    } catch (error) {
+      console.error("Failed to add element:", error);
+    }
+  };
+  const handleDeleteElement = async (index) => {
+    try {
+      const data = await getStore();
+      const presentation = data.store[id];
+
+      // Remove the element by index
+      presentation[currentIndex].elements = presentation[
+        currentIndex
+      ].elements.filter((_, i) => i !== index);
+
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: presentation,
+        },
+      };
+
+      await updateStore(updatedStore);
+      setPresentation(presentation);
+      setShowDeleteModal(false);
+      setDeleteIndex(null);
+    } catch (error) {
+      console.error("Failed to delete element:", error);
+    }
+  };
   useEffect(() => {
     const handleContextMenu = (e) => {
       if (selectedElement) {
         e.preventDefault();
-        setDeleteIndex(selectedElement.index);
+        setDeleteIndex(selectedElement.index); // Set the index of the element to delete
         setShowDeleteModal(true);
       }
     };
@@ -272,118 +274,120 @@ const handleDeleteElement = async (index) => {
     };
   }, [selectedElement]);
 
-const handleElementClick = (element, index) => {
-  const currentTime = new Date().getTime();
-  const timeDiff = currentTime - lastClickTime;
-if (selectedElement?.index === index && timeDiff < 300) {
-  console.log("Double click on:", element.type); 
-  setEditingElement({ ...element, index });
-} else {
-  setSelectedElement({ element, index });
-  setLastClickTime(currentTime);
-}
-};
-const handleFontChange = async (event) => {
-  const newFont = event.target.value;
-  setCurrentFont(newFont);
+  const handleElementClick = (element, index) => {
+    const currentTime = new Date().getTime();
+    const timeDiff = currentTime - lastClickTime;
+    if (selectedElement?.index === index && timeDiff < 300) {
+      setEditingElement({ ...element, index }); // Enter edit mode for the element
+    } else {
+      setSelectedElement({ element, index }); // Select the clicked element
+      setLastClickTime(currentTime); // Update last click time
+    }
+  };
 
-  if (selectedElement) {
+  const handleFontChange = async (event) => {
+    const newFont = event.target.value;
+    setCurrentFont(newFont);
+
+    if (selectedElement) {
+      try {
+        const data = await getStore();
+        const presentation = data.store[id];
+        if (presentation[currentIndex]?.elements?.[selectedElement.index]) {
+          presentation[currentIndex].elements[selectedElement.index] = {
+            ...presentation[currentIndex].elements[selectedElement.index],
+            fontFamily: newFont,
+          };
+
+          const updatedStore = {
+            store: {
+              ...data.store,
+              [id]: presentation,
+            },
+          };
+
+          await updateStore(updatedStore);
+          setPresentation(presentation);
+        }
+      } catch (error) {
+        console.error("Failed to update font:", error);
+      }
+    }
+  };
+
+  const handleBackgroundSubmit = async (backgroundData) => {
     try {
       const data = await getStore();
       const presentation = data.store[id];
-      if (presentation[currentIndex]?.elements?.[selectedElement.index]) {
-        presentation[currentIndex].elements[selectedElement.index] = {
-          ...presentation[currentIndex].elements[selectedElement.index],
-          fontFamily: newFont,
-        };
 
-        const updatedStore = {
-          store: {
-            ...data.store,
-            [id]: presentation,
-          },
-        };
-
-        await updateStore(updatedStore);
-        setPresentation(presentation);
+      if (backgroundData.isDefault) {
+        presentation.defaultBackground = backgroundData; // Set default background
+      } else {
+        if (!presentation[currentIndex]) {
+          presentation[currentIndex] = {};
+        }
+        presentation[currentIndex].background = backgroundData; 
       }
-    } catch (error) {
-      console.error("Failed to update font:", error);
-    }
-  }
-};
-const handleBackgroundSubmit = async (backgroundData) => {
-  try {
-    const data = await getStore();
-    const presentation = data.store[id];
 
-    if (backgroundData.isDefault) {
-      presentation.defaultBackground = backgroundData;
-    } else {
-      if (!presentation[currentIndex]) {
-        presentation[currentIndex] = {};
-      }
-      presentation[currentIndex].background = backgroundData;
-    }
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: presentation,
-      },
-    };
-
-    await updateStore(updatedStore);
-    setPresentation(presentation);
-  } catch (error) {
-    console.error("Failed to update background:", error);
-  }
-};
-const getBackgroundStyle = (background) => {
-  if (!background) return {};
-
-  switch (background.type) {
-    case "solid":
-      return { backgroundColor: background.color };
-    case "gradient":
-      return {
-        background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
-      };
-    case "image":
-      return {
-        backgroundImage: `url(${background.imageUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      };
-    default:
-      return {};
-  }
-};
-const handlePreview = () => {
-  navigate(`/presentation/${id}/preview?slide=${currentIndex}`);
-};
-
-const handleThumbnailUpdate = async (thumbnailData) => {
-  try {
-    const data = await getStore();
-    const presentationData = data.store[id];
-
-    const updatedStore = {
-      store: {
-        ...data.store,
-        [id]: {
-          ...presentationData,
-          thumbnailUrl: thumbnailData.thumbnailUrl,
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: presentation,
         },
-      },
-    };
+      };
 
-    await updateStore(updatedStore);
-    getPresentationDetail(); 
-  } catch (error) {
-    console.error("Failed to update thumbnail:", error);
-  }
-};
+      await updateStore(updatedStore);
+      setPresentation(presentation);
+    } catch (error) {
+      console.error("Failed to update background:", error);
+    }
+  };
+
+  const getBackgroundStyle = (background) => {
+    if (!background) return {};
+
+    switch (background.type) {
+      case "solid":
+        return { backgroundColor: background.color }; 
+      case "gradient":
+        return {
+          background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
+        }; 
+      case "image":
+        return {
+          backgroundImage: `url(${background.imageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }; // Image background
+      default:
+        return {};
+    }
+  };
+
+  const handlePreview = () => {
+    navigate(`/presentation/${id}/preview?slide=${currentIndex}`); // Navigate to the preview page
+  };
+  const handleThumbnailUpdate = async (thumbnailData) => {
+    try {
+      const data = await getStore();
+      const presentationData = data.store[id];
+
+      const updatedStore = {
+        store: {
+          ...data.store,
+          [id]: {
+            ...presentationData,
+            thumbnailUrl: thumbnailData.thumbnailUrl, 
+          },
+        },
+      };
+
+      await updateStore(updatedStore);
+      getPresentationDetail();
+    } catch (error) {
+      console.error("Failed to update thumbnail:", error);
+    }
+  };
 
   return (
     <Box>
@@ -433,7 +437,7 @@ const handleThumbnailUpdate = async (thumbnailData) => {
             onChange={(e) => {
               setCurrentFont(e.target.value);
               if (selectedElement) {
-                handleFontChange(e); 
+                handleFontChange(e);
               }
             }}
             label="Font Family"
