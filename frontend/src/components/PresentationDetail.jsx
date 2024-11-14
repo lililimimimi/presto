@@ -9,6 +9,7 @@ import TextModal from "./TextModal";
 import ImageModal from "./ImageModal";
 import VideoModal from "./VideoModal";
 import CodeModal from "./CodeModal";
+import BackgroundModal from "./BackgroundModal";
 import { Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material"; 
 
 const PresentationDetail = () => {
@@ -314,7 +315,6 @@ const handleFontChange = async (event) => {
       >
         Delete Slide
       </Button>
-
       <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
         <FormControl sx={{ minWidth: 200 }}>
           <InputLabel>Font Family</InputLabel>
@@ -437,7 +437,6 @@ const handleFontChange = async (event) => {
       <Typography gutterBottom variant="h5" component="div">
         {currentIndex}
       </Typography>
-
       <TextModal presentationId={id} onSubmit={handleAddElement} />
       <ImageModal presentationId={id} onSubmit={handleAddElement} />
       <VideoModal presentationId={id} onSubmit={handleAddElement} />
