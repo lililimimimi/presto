@@ -1,8 +1,7 @@
-import { Routes, Route, BrowserRouter, useNavigate,Link } from "react-router-dom";
-import React, { useState} from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 
-const Logout =(props)=>{
+const Logout = (props) => {
   const navigate = useNavigate();
 
   // Handle user logout
@@ -34,12 +33,12 @@ const Logout =(props)=>{
           </Button>
         </>
       ) : (
-        <Button variant="contained" onClick={handleLogout}> 
+        <Button variant="contained" onClick={handleLogout}>
           Logout
         </Button>
       )}
     </div>
   );
-}
+};
 
 export default Logout;

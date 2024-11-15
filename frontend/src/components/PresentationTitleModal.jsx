@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import { useState,useEffect } from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { TextField } from "@mui/material";
@@ -39,72 +39,72 @@ const PresentationModal = ({
   };
 
   // Function to handle creating or editing a presentation
-const handleSubmit = async () => {
-  if (!title.trim()) {
-    alert("Please enter a title");
-    return;
-  }
-
-  try {
-    const data = await getStore();
-    const { store } = data;
-
-    let thumbnailUrl = previewUrl;
-    if (thumbnailFile) {
-      const reader = new FileReader();
-      thumbnailUrl = await new Promise((resolve) => {
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(thumbnailFile);
-      });
+  const handleSubmit = async () => {
+    if (!title.trim()) {
+      alert("Please enter a title");
+      return;
     }
 
-    if (mode === "create") {
-      const timestamp = Date.now();
-      const newId = `${timestamp}`;
-      const updatedStore = {
-        store: {
-          ...store,
-          [newId]: {
-            1: {},
-            Title: title,
-            description: description || "",
-            thumbnailUrl,
-          },
-        },
-      };
-      await updateStore(updatedStore);
-    } else {
-      const updatedStore = {
-        store: {
-          ...store,
-          [initialData.id]: {
-            ...store[initialData.id],
-            Title: title,
-            description: description || "",
-            thumbnailUrl,
-          },
-        },
-      };
-      await updateStore(updatedStore);
-    }
+    try {
+      const data = await getStore();
+      const { store } = data;
 
+      let thumbnailUrl = previewUrl;
+      if (thumbnailFile) {
+        const reader = new FileReader();
+        thumbnailUrl = await new Promise((resolve) => {
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(thumbnailFile);
+        });
+      }
+
+      if (mode === "create") {
+        const timestamp = Date.now();
+        const newId = `${timestamp}`;
+        const updatedStore = {
+          store: {
+            ...store,
+            [newId]: {
+              1: {},
+              Title: title,
+              description: description || "",
+              thumbnailUrl,
+            },
+          },
+        };
+        await updateStore(updatedStore);
+      } else {
+        const updatedStore = {
+          store: {
+            ...store,
+            [initialData.id]: {
+              ...store[initialData.id],
+              Title: title,
+              description: description || "",
+              thumbnailUrl,
+            },
+          },
+        };
+        await updateStore(updatedStore);
+      }
+
+      setTitle("");
+      setDescription("");
+      setThumbnailFile(null);
+      setPreviewUrl("");
+      onClose();
+      onSuccess?.();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+  const handleCancel = () => {
     setTitle("");
     setDescription("");
     setThumbnailFile(null);
     setPreviewUrl("");
     onClose();
-    onSuccess?.();
-  } catch (error) {
-    alert(error.message);
-  }
-};
-const handleCancel = () => {
-  setTitle("");
-  setDescription("");
-  setThumbnailFile(null);
-  setPreviewUrl("");
-  onClose();
-};
+  };
 
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title">

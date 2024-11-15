@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
@@ -20,12 +20,7 @@ const style = {
   p: 4,
 };
 
-const ImageModal = ({
-  onSubmit,
-  presentationId,
-  initialData = null,
-  onClose,
-}) => {
+const ImageModal = ({ onSubmit, initialData = null, onClose }) => {
   const [open, setOpen] = useState(Boolean(initialData));
   const handleOpen = () => setOpen(true);
   const [imageSize, setImageSize] = useState(initialData?.imageSize || "");
@@ -69,7 +64,7 @@ const ImageModal = ({
         }
       }
       return googleUrl;
-    } catch (e) {
+    } catch {
       return googleUrl;
     }
   };

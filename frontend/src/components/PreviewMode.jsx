@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
 import { getStore } from "../api/data";
@@ -74,20 +74,20 @@ const PreviewMode = () => {
     if (!background) return {};
 
     switch (background.type) {
-      case "solid":
-        return { backgroundColor: background.color };
-      case "gradient":
-        return {
-          background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
-        };
-      case "image":
-        return {
-          backgroundImage: `url(${background.imageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        };
-      default:
-        return {};
+    case "solid":
+      return { backgroundColor: background.color };
+    case "gradient":
+      return {
+        background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
+      }
+    case "image":
+      return {
+        backgroundImage: `url(${background.imageUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }
+    default:
+      return {}
     }
   };
   // Exit preview mode

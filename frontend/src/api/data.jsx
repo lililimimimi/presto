@@ -15,9 +15,9 @@ export const login = async (email, password) => {
     });
 
     if (!response.ok) {
-     const error = new Error("Login failed");
-     error.response = response;
-     throw error;
+      const error = new Error("Login failed");
+      error.response = response;
+      throw error;
     }
     const data = await response.json();
     return data;
@@ -66,7 +66,7 @@ export const getStore = async () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userToken}`, 
+        Authorization: `Bearer ${userToken}`,
       },
     });
 
@@ -108,6 +108,3 @@ export const updateStore = async (storeData) => {
     throw error;
   }
 };
-
-
-    

@@ -1,5 +1,4 @@
-import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MediaCard from "./MediaCard";
 import PresentationModal from "./PresentationTitleModal";
 import { getStore } from "../api/data";
@@ -65,7 +64,7 @@ const Dashboard = () => {
         mode="create"
       />
 
-      {presentation.map((item, index) => (
+      {presentation.map((item) => (
         <MediaCard
           key={item.id}
           id={item.id}

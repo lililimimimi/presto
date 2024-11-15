@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { getStore, updateStore } from "../api/data";
@@ -31,7 +31,6 @@ const PresentationDetail = () => {
   const [presentation, setPresentation] = useState({});
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [sliedeCount, setSlideCount] = useState(1);
   const currentElements = presentation[currentIndex]?.elements || [];
@@ -61,7 +60,6 @@ const PresentationDetail = () => {
 
   // Fetches presentation details and updates state.
   const getPresentationDetail = async () => {
-    setLoading(true);
     try {
       const data = await getStore();
       if (data && data.store) {
@@ -98,7 +96,8 @@ const PresentationDetail = () => {
       await updateStore(updatedStore);
       setShowDeleteModal(false);
       navigate("/dashboard");
-    } catch (error) {
+    } catch (_error) {
+      console.error("An error occurred during deletion:", _error);
     }
   };
   // Navigates to the previous slide
@@ -162,7 +161,7 @@ const PresentationDetail = () => {
 
       const slides = Object.keys(presentation).filter((key) => !isNaN(key));
       if (slides.length <= 1) {
-         setShowDeleteModal(true);
+        setShowDeleteModal(true);
         return;
       }
       let updatedPresentation = { ...presentation };
@@ -176,11 +175,10 @@ const PresentationDetail = () => {
       }
 
       const updatedStore = {
-       store: {
-        ...data.store,
-        [id]: updatedPresentation
-      }
-        
+        store: {
+          ...data.store,
+          [id]: updatedPresentation,
+        },
       };
       await updateStore(updatedStore);
 
@@ -191,7 +189,9 @@ const PresentationDetail = () => {
 
       setSlideCount((prev) => prev - 1);
       getPresentationDetail();
-    } catch (error) {}
+    } catch (_error) {
+      console.error("Failed to delete slide:", _error); 
+    }
   };
   // Updates a specific element
   const handleEditElement = async (updatedData) => {
@@ -272,8 +272,8 @@ const PresentationDetail = () => {
       setDeleteIndex(null);
     } catch (error) {
       console.error("Failed to delete element:", error);
-       setShowDeleteModal(false);
-       setDeleteIndex(null);
+      setShowDeleteModal(false);
+      setDeleteIndex(null);
     }
   };
   // Opens the delete modal on right-click
@@ -364,20 +364,20 @@ const PresentationDetail = () => {
     if (!background) return {};
 
     switch (background.type) {
-      case "solid":
-        return { backgroundColor: background.color }; // Solid color background
-      case "gradient":
-        return {
-          background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
-        }; // Gradient background
-      case "image":
-        return {
-          backgroundImage: `url(${background.imageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }; // Image background
-      default:
-        return {};
+    case "solid":
+      return { backgroundColor: background.color }; // Solid color background
+    case "gradient":
+      return {
+        background: `linear-gradient(${background.gradientDirection}, ${background.gradientStart}, ${background.gradientEnd})`,
+      }; // Gradient background
+    case "image":
+      return {
+        backgroundImage: `url(${background.imageUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }; // Image background
+    default:
+      return {};
     }
   };
   // Opens the preview for the current slide.
@@ -518,7 +518,7 @@ const PresentationDetail = () => {
         {currentElements.map((element, index) => (
           <Box
             key={index}
-            onMouseDown={(e) => handleElementClick(element, index)}
+            onMouseDown={() => handleElementClick(element, index)}
             sx={{
               position: "absolute",
               top: `${element.position?.y || 0}%`,

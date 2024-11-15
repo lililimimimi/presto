@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
@@ -82,7 +82,7 @@ const CodeModal = ({ onSubmit, initialData = null, onClose }) => {
     }
     if (onClose) onClose();
   };
-  
+
   // Handle code content changes and detect language automatically
   const handleCodeChange = (e) => {
     const newCode = e.target.value;

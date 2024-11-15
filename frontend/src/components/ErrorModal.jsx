@@ -1,4 +1,3 @@
-import React from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
 
 const ErrorModal = ({ open, onClose, onConfirm, title, content }) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
@@ -30,15 +30,15 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
 
   const handleClose = () => {
     setOpen(false);
-        if (!initialData) {
-          setSize("");
-          setUrl("");
-          setAutoplay(false);
-        }
-       if (onClose) {
-      onClose();
-       }
+    if (!initialData) {
+      setSize("");
+      setUrl("");
+      setAutoplay(false);
     }
+    if (onClose) {
+      onClose();
+    }
+  };
 
   const handleSubmit = () => {
     const videoData = {
@@ -50,11 +50,11 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
     };
     onSubmit(videoData);
     handleClose();
-      if (!initialData) {
-        setSize("");
-        setUrl("");
-        setAutoplay(false);
-      }
+    if (!initialData) {
+      setSize("");
+      setUrl("");
+      setAutoplay(false);
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
@@ -12,7 +12,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: {
     xs: "80%",
-    sm: 400, 
+    sm: 400,
   },
   bgcolor: "background.paper",
   border: "2px solid #000",
