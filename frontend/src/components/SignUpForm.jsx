@@ -49,7 +49,7 @@ const SignUpForm = ({ setToken }) => {
   return (
     <Container
       sx={{
-        minHeight: "80vh",
+        minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -103,7 +103,7 @@ const SignUpForm = ({ setToken }) => {
             onClick={() => navigate("/login")}
             sx={{ fontStyle: "italic" }}
           >
-            Want to log in?
+            Already have an account? Login
           </Button>
 
           <Box sx={{ display: "flex", gap: 2 }}>

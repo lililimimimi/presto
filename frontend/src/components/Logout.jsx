@@ -1,5 +1,5 @@
-import { useNavigate, Link } from "react-router-dom";
-import Button from "@mui/material/Button";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Logout = (props) => {
   const navigate = useNavigate();
@@ -10,34 +10,66 @@ const Logout = (props) => {
     props.setToken(null);
     navigate("/login");
   };
+
   return (
-    <div
-      style={{
-        padding: "10px",
-        display: "flex",
-        justifyContent: "flex-end",
-      }}
-    >
-      {props.token === null ? (
-        <>
-          <Button
-            component={Link}
-            to="/login"
-            variant="contained"
-            sx={{ mr: 2 }}
-          >
-            Login
-          </Button>
-          <Button component={Link} to="/register" variant="contained">
-            Register
-          </Button>
-        </>
-      ) : (
-        <Button variant="contained" onClick={handleLogout}>
-          Logout
-        </Button>
-      )}
-    </div>
+    <>
+      <AppBar
+        position="fixed"
+        sx={{
+          backgroundColor: "#f5f5f5",
+          boxShadow: "none",
+          color: "black",
+          width: "100%",
+        }}
+      >
+        <Toolbar
+          disableGutters
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "0 20px",
+          }}
+        >
+          {/* Left Presto */}
+          <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
+            Presto
+          </Typography>
+
+          {/* Right Button */}
+          <Box>
+            {props.token === null ? (
+              <>
+                <Button
+                  variant="contained"
+                  sx={{ marginRight: 2, minWidth: "100px" }}
+                  onClick={() => navigate("/login")}
+                  size="medium"
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate("/register")}
+                  size="medium"
+                  sx={{ minWidth: "100px" }}
+                >
+                  Register
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={handleLogout}
+                sx={{ minWidth: "100px" }}
+              >
+                Logout
+              </Button>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
+    </>
   );
 };
 

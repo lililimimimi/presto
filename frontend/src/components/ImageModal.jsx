@@ -114,6 +114,7 @@ const ImageModal = ({ onSubmit, initialData = null, onClose }) => {
             label="Size"
             variant="outlined"
             margin="normal"
+            type="number"
             fullWidth
             InputLabelProps={{ shrink: true }}
             onChange={(e) => setImageSize(e.target.value)}

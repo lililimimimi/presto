@@ -68,7 +68,7 @@ const SignInForm = ({ setToken }) => {
             onClick={() => navigate("/register")}
             sx={{ fontStyle: "italic" }}
           >
-            Already have an account?
+            Don&apos;t have an account? Register
           </Button>
 
           <Box sx={{ display: "flex", gap: 2 }}>

@@ -11,6 +11,7 @@ import PreviewMode from './components/PreviewMode';
 function App() {
   const [token,setToken] = useState(localStorage.getItem('token'));
   return (
+   
     <BrowserRouter
       future={{
         v7_startTransition: true,
@@ -36,6 +37,7 @@ function App() {
         <Route path="/presentation/:id/preview" element={<PreviewMode />} />
       </Routes>
     </BrowserRouter>
+
   );
 }
 

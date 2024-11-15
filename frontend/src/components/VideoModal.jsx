@@ -79,6 +79,7 @@ const VideoModal = ({ onSubmit, initialData = null, onClose }) => {
             label="Video Size"
             variant="outlined"
             fullWidth
+            type="number"
             margin="normal"
             InputLabelProps={{ shrink: true }}
             onChange={(e) => setSize(e.target.value)}
