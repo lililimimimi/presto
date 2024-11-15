@@ -33,6 +33,7 @@ const MediaCard = ({ id, title, description, slideCount, thumbnailUrl }) => {
         }}
       >
         <Box
+          data-testid="thumbnail-box"
           sx={{
             height: "150px",
             backgroundColor: "#f5f5f5",
